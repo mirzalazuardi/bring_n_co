@@ -28,7 +28,7 @@ export function ParallaxHero({ children }: { children: React.ReactNode }) {
       drift: 48,
       pointerStrength: 10,
       className:
-        'absolute -right-8 -top-20 sm:-right-16 sm:top-0 select-none font-display italic font-black leading-none text-teal-900/[0.05] dark:text-teal-100/[0.04] text-[18rem] sm:text-[26rem]',
+        'absolute -right-8 -top-20 sm:-right-16 sm:top-0 select-none font-display font-bold leading-none text-teal-900/[0.05] dark:text-teal-100/[0.04] text-[18rem] sm:text-[26rem]',
       content: '25',
     },
     {

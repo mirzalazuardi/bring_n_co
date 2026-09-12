@@ -26,7 +26,7 @@
   - Verify: `npm run lint && npm run build`
   - Expected: renders as a scalable square badge; colors match pin; no client JS
 
-- [ ] [MID] Compose hero with badge + mint-forward surfaces
+- [x] [MID] Compose hero with badge + mint-forward surfaces
   - File: `app/page.tsx`
   - Change: replace the plain "25 / Tahun Persahabatan" marker block with `<PinMark25 className="h-24 w-24 sm:h-28 sm:w-28" />` beside the "Tahun Persahabatan" caption; add mint washes to section surfaces (hero `bg-teal-50`, class strip `bg-teal-50/50`, features keep `bg-stone-50`, footer CTA `bg-teal-50/40`; dark equivalents keep existing dark neutrals)
   - Context: hero marker block at the top of the hero grid in `app/page.tsx`; ParallaxHero backdrop layers and all CTAs stay as-is

@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { EventCountdown } from '@/components/EventCountdown';
 import { ParallaxHero } from '@/components/ParallaxHero';
+import { PinMark25 } from '@/components/PinMark25';
 import { Reveal } from '@/components/Reveal';
 import {
   Shirt,
@@ -32,17 +33,15 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero — warm, grounded, asymmetric, with parallax depth layers */}
-      <section className="relative overflow-hidden bg-stone-50 dark:bg-gray-900 border-b border-stone-200 dark:border-gray-800">
+      <section className="relative overflow-hidden bg-teal-50 dark:bg-gray-900 border-b border-stone-200 dark:border-gray-800">
         <ParallaxHero>
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
             <div className="grid lg:grid-cols-5 gap-12 items-center">
               {/* Left content — 3 cols */}
               <div className="lg:col-span-3 space-y-8">
-                {/* Display-serif year marker */}
+                {/* Pin-style year badge */}
                 <div className="flex items-center gap-4">
-                  <span className="font-display italic text-6xl sm:text-8xl font-black text-teal-600 dark:text-teal-400 leading-none tracking-tight">
-                    25
-                  </span>
+                  <PinMark25 className="h-24 w-24 sm:h-28 sm:w-28 shrink-0" />
                   <div className="border-l-2 border-teal-200 dark:border-teal-800 pl-4 space-y-0.5">
                     <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-400 dark:text-gray-500">
                       Tahun
@@ -56,7 +55,7 @@ export default async function HomePage() {
                 <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-stone-900 dark:text-gray-100 leading-[1.05] text-balance">
                   Reuni Akbar
                   <br />
-                  <span className="italic text-teal-600 dark:text-teal-400">
+                  <span className="text-teal-600 dark:text-teal-400">
                     SMA Negeri 14
                   </span>
                   <br />
@@ -108,7 +107,7 @@ export default async function HomePage() {
       </section>
 
       {/* Classes — casual, not a "banner" */}
-      <Reveal className="py-10 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-b border-stone-200 dark:border-gray-800">
+      <Reveal className="py-10 px-4 sm:px-6 lg:px-8 bg-teal-50/50 dark:bg-gray-900 border-b border-stone-200 dark:border-gray-800">
         <div className="max-w-5xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
             <div className="flex items-center gap-2 text-sm font-medium text-stone-500 dark:text-gray-400 shrink-0">
@@ -195,7 +194,7 @@ export default async function HomePage() {
       </section>
 
       {/* Footer CTA — simple, not salesy */}
-      <Reveal className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-stone-200 dark:border-gray-800 text-center">
+      <Reveal className="py-16 px-4 sm:px-6 lg:px-8 bg-teal-50/40 dark:bg-gray-900 border-t border-stone-200 dark:border-gray-800 text-center">
         <div className="max-w-xl mx-auto space-y-4">
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-stone-900 dark:text-gray-100 text-balance">
             Sudah siap kembali?
