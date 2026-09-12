@@ -1,11 +1,12 @@
 import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth';
-import { UploadForm } from '@/components/UploadForm';
+import { ImageUploader } from '@/components/ImageUploader';
+import { env } from '@/lib/env';
 import { ImagePlus } from 'lucide-react';
 
 export const metadata = {
-  title: 'Upload Memories | Silver Reunion',
+  title: 'Unggah Kenangan | SMA Negeri 14 Bandung',
 };
 
 export default async function UploadPage() {
@@ -16,22 +17,22 @@ export default async function UploadPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-xl mx-auto">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 mb-4">
-            <ImagePlus className="w-6 h-6 text-slate-300" />
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-teal-100 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 mb-4">
+            <ImagePlus className="w-6 h-6 text-teal-600 dark:text-teal-400" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100">
-            Share Reunion Memories
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+            Bagikan Kenangan Reuni
           </h1>
-          <p className="text-sm text-slate-400 mt-2">
-            Upload vintage high school photographs or recent get-together snapshots to display in the live community gallery.
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            Unggah foto masa SMA atau momen kumpul terkini. Foto dioptimalkan otomatis agar cepat ditampilkan di galeri komunitas.
           </p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-          <UploadForm />
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 sm:p-8 shadow-sm">
+          <ImageUploader maxSizeMb={env.MAX_IMAGE_SIZE_MB} />
         </div>
       </div>
     </div>

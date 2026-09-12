@@ -104,7 +104,7 @@ Spec source: user-provided production spec (pasted 2026-09-12); filed in `propos
   - Expected: route handler unit tests for state-machine decisions with mocked prisma/session
   - DONE criteria: REQ-IMGPIPE-005 scenarios
 
-- [ ] [HIGH] `image-uploader` React component + replace gallery upload form
+- [x] [HIGH] `image-uploader` React component + replace gallery upload form
   - Depends on: T4, T6
   - Context anchors:
     * Read `components/UploadForm.tsx` + `app/(protected)/upload/page.tsx` (current UX, title/description fields preserved)

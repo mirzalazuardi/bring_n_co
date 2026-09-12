@@ -108,7 +108,23 @@ export const optimizeImageTask = task({
         height: source.height,
         jobRunId,
       });
-      log(`completed with ${Object.keys(variantsMap).length} variants`);
+
+      // 6. Publish to the community gallery (idempotent via unique imageAssetId;
+      //    re-runs update instead of duplicating). Serves the optimized medium
+      //    WebP with the original as fallback.
+      const galleryUrl = variantsMap.medium?.url ?? asset.originalUrl ?? '';
+      await prisma.image.upsert({
+        where: { imageAssetId: imageId },
+        create: {
+          url: galleryUrl,
+          userId: asset.userId,
+          imageAssetId: imageId,
+          title: asset.title,
+          description: asset.description,
+        },
+        update: { url: galleryUrl },
+      });
+      log(`completed with ${Object.keys(variantsMap).length} variants, gallery updated`);
 
       return { status: 'completed' as const, variants: Object.keys(variantsMap) };
     } catch (error) {
