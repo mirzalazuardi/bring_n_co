@@ -1,11 +1,24 @@
 import type { Metadata } from 'next';
+import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { SessionProvider } from '@/components/SessionProvider';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { StripBrowserExtensions } from '@/components/StripBrowserExtensions';
 import { Navbar } from '@/components/Navbar';
 
+const inter = Inter({ subsets: ['latin'] });
+
+// Display serif for headings — exposed as a CSS variable, applied via the
+// `.font-display` Tailwind token (see tailwind.config.ts fontFamily.display).
+const display = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
-  title: 'Silver Reunion | 25th High School Reunion',
-  description: 'Official portal for our 25th high school silver year reunion. Register, pick your jersey size, and share nostalgia photos.',
+  title: 'Reuni 25 Tahun | SMA Negeri 14 Bandung',
+  description: 'Portal resmi perayaan reuni 25 tahun SMA Negeri 14 Bandung. Daftar, pilih ukuran jersey, dan bagikan foto kenangan bersama alumni.',
 };
 
 export default function RootLayout({
@@ -14,15 +27,28 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-slate-300 selection:text-slate-950">
-        <SessionProvider>
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <footer className="border-t border-slate-900 py-6 text-center text-xs text-slate-500">
-            Silver Reunion • 25th High School Reunion Celebration • Classes IPA-1..3 & IPS-1..4
-          </footer>
-        </SessionProvider>
+    <html lang="id" className={`scroll-smooth ${inter.className} ${display.variable}`} suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{(function(){function s(e){e.removeAttribute('bis_skin_checked');e.removeAttribute('bis_register')}document.querySelectorAll('[bis_skin_checked],[bis_register]').forEach(s);new MutationObserver(function(m){for(var i=0;i<m.length;i++){if(m[i].target.nodeType===1)s(m[i].target)}}).observe(document.documentElement,{childList:true,subtree:true,attributes:true})})()}catch(x){}`,
+          }}
+        />
+      </head>
+      <body className="bg-stone-50 dark:bg-gray-900 text-stone-900 dark:text-gray-100 min-h-screen flex flex-col selection:bg-teal-200 dark:selection:bg-teal-800 selection:text-teal-900 dark:selection:text-teal-100" suppressHydrationWarning>
+        <StripBrowserExtensions />
+        <ThemeProvider>
+          <SessionProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <footer className="border-t border-stone-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-8 text-center text-sm text-stone-500 dark:text-gray-400">
+              <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                <p className="font-medium text-stone-700 dark:text-gray-300">Reuni 25 Tahun SMA Negeri 14 Bandung</p>
+                <p className="mt-1 text-xs text-stone-400 dark:text-gray-500">Kelas IPA-1 s.d. IPA-3 & IPS-1 s.d. IPS-4 &bull; Angkatan 2001</p>
+              </div>
+            </footer>
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
