@@ -40,10 +40,10 @@ Multi-subsystem greenfield full-stack implementation involving OAuth/Credentials
   - [x] 5.4 Build `GallerySlideshow` client component with 4-second auto-advance, manual next/prev controls, pause on hover, and `x / n` counter indicator.
   - [x] 5.5 Configure image display with `unoptimized` flag or standardized dimensions to guarantee staying within Vercel's 5,000 transform/month hobby limit.
 
-- [ ] **6. Navigation, Layout & Event Countdown**
-  - [ ] 6.1 Build root navigation header with dynamic session state (Sign In, Profile/Registration CTA, Gallery, Upload, Sign Out).
-  - [ ] 6.2 Build `EventCountdown` client component displaying Days, Hours, Minutes, Seconds with `setInterval` cleanup and post-event state ("Event has started!").
-  - [ ] 6.3 Assemble homepage at `app/page.tsx` with hero section, reunion details, countdown timer, and quick CTAs.
+- [x] **6. Navigation, Layout & Event Countdown**
+  - [x] 6.1 Build root navigation header with dynamic session state (Sign In, Profile/Registration CTA, Gallery, Upload, Sign Out).
+  - [x] 6.2 Build `EventCountdown` client component displaying Days, Hours, Minutes, Seconds with `setInterval` cleanup and post-event state ("Event has started!").
+  - [x] 6.3 Assemble homepage at `app/page.tsx` with hero section, reunion details, countdown timer, and quick CTAs.
 
 - [ ] **7. Security Guardrails & Verification**
   - [ ] 7.1 Enforce client-side file size guards (< 4 MB) preventing 413 Payload Too Large errors on Vercel.
