@@ -30,6 +30,23 @@ enum VerificationStatus {
   REJECTED
 }
 
+enum ImageStatus {
+  QUEUED
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ImageErrorCategory {
+  INVALID_FILE
+  UNSUPPORTED_FORMAT
+  FILE_TOO_LARGE
+  DOWNLOAD_FAILED
+  PROCESSING_FAILED
+  STORAGE_FAILED
+  UNKNOWN
+}
+
 model User {
   id            String         @id @default(cuid())
   name          String?
@@ -44,6 +61,7 @@ model User {
   sessions      Session[]
   registration  Registration?
   galleryImages Image[]
+  imageAssets   ImageAsset[]
 
   @@map("users")
 }
@@ -120,4 +138,31 @@ model Image {
   @@index([userId])
   @@index([createdAt])
   @@map("images")
+}
+
+/// Optimized gallery image pipeline asset (see openspec/changes/feat-image-optimization-pipeline).
+/// `variants` JSON shape: { [variant]: { key, url, width, height, size, mime } }
+model ImageAsset {
+  id            String              @id @default(uuid())
+  userId        String
+  originalKey   String              @unique
+  originalUrl   String?             @db.Text
+  originalMime  String?
+  originalSize  BigInt?
+  status        ImageStatus         @default(QUEUED)
+  width         Int?
+  height        Int?
+  variants      Json?
+  errorMessage  String?             @db.Text
+  errorCategory ImageErrorCategory?
+  jobRunId      String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  processedAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([userId])
+  @@map("image_assets")
 }
