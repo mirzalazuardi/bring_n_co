@@ -90,7 +90,7 @@ Spec source: user-provided production spec (pasted 2026-09-12); filed in `propos
   - Expected: claim/classification logic unit-tested with mocked prisma
   - DONE criteria: REQ-IMGPIPE-003, REQ-IMGPIPE-005, REQ-IMGPIPE-007 scenarios
 
-- [ ] [HIGH] Status + reprocess API routes
+- [x] [HIGH] Status + reprocess API routes
   - Depends on: T2, T4
   - Context anchors:
     * Spec "API routes": 202 on queue, 404 unknown id, 409 reprocess-not-allowed, structured JSON, auth boundary, abuse protection placeholder
