@@ -31,7 +31,7 @@
   - Verify: `npm test -- useParallax`
   - Expected: unit tests pass — returns `active: false` under reduced motion; listeners removed on unmount
 
-- [ ] [MID] Create `useScrollReveal` hook
+- [x] [MID] Create `useScrollReveal` hook
   - File: `components/useScrollReveal.ts` (new)
   - Change: add
     ```ts
