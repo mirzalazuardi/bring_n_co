@@ -5,11 +5,11 @@ Multi-subsystem greenfield full-stack implementation involving OAuth/Credentials
 
 ---
 
-- [ ] **1. Scaffolding & Dependencies**
-  - [ ] 1.1 Initialize Next.js 14+ App Router project with TypeScript, ESLint, and Tailwind CSS.
-  - [ ] 1.2 Install runtime dependencies: `next-auth`, `@prisma/client`, `@vercel/blob`, `bcryptjs`, `zod`, `lucide-react`.
-  - [ ] 1.3 Install dev dependencies: `prisma`, `@types/bcryptjs`, `vitest`, `@testing-library/react`.
-  - [ ] 1.4 Configure environment validation helper with Zod in `lib/env.ts`.
+- [x] **1. Scaffolding & Dependencies**
+  - [x] 1.1 Initialize Next.js 14+ App Router project with TypeScript, ESLint, and Tailwind CSS.
+  - [x] 1.2 Install runtime dependencies: `next-auth`, `@prisma/client`, `@vercel/blob`, `bcryptjs`, `zod`, `lucide-react`.
+  - [x] 1.3 Install dev dependencies: `prisma`, `@types/bcryptjs`, `vitest`, `@testing-library/react`.
+  - [x] 1.4 Configure environment validation helper with Zod in `lib/env.ts`.
 
 - [ ] **2. Database & Prisma Modeling**
   - [ ] 2.1 Define PostgreSQL schema in `prisma/schema.prisma` (`User`, `Account`, `Session`, `VerificationToken`, `Registration`, `Image`).
