@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Playfair_Display } from 'next/font/google';
+import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { SessionProvider } from '@/components/SessionProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -8,9 +8,10 @@ import { Navbar } from '@/components/Navbar';
 
 const inter = Inter({ subsets: ['latin'] });
 
-// Display serif for headings — exposed as a CSS variable, applied via the
-// `.font-display` Tailwind token (see tailwind.config.ts fontFamily.display).
-const display = Playfair_Display({
+// Brand heading voice (matches the commemorative pin's rounded, technical
+// letterforms) — exposed as a CSS variable, applied via the `.font-display`
+// Tailwind token (see tailwind.config.ts fontFamily.display).
+const display = Space_Grotesk({
   subsets: ['latin'],
   variable: '--font-display',
   display: 'swap',
