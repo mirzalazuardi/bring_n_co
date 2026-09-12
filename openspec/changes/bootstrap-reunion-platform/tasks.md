@@ -33,12 +33,12 @@ Multi-subsystem greenfield full-stack implementation involving OAuth/Credentials
   - [x] 4.4 Build `RegistrationForm` client component in `app/(protected)/registration/page.tsx` with size selector, class selector, phone input, file dropzone, and progress indicator.
   - [x] 4.5 Add visual badge for verification status (`PENDING`, `APPROVED`, `REJECTED`) on user registration page.
 
-- [ ] **5. General Gallery Upload & Slideshow**
-  - [ ] 5.1 Implement `POST /api/upload` route handler accepting image file (`image/*`, ≤ 4.5 MB), uploading to Vercel Blob, and creating `Image` record linked to user.
-  - [ ] 5.2 Build `UploadForm` client component at `app/(protected)/upload/page.tsx` with image preview and submission handling.
-  - [ ] 5.3 Implement gallery server page at `app/gallery/page.tsx` querying published images from database.
-  - [ ] 5.4 Build `GallerySlideshow` client component with 4-second auto-advance, manual next/prev controls, pause on hover, and `x / n` counter indicator.
-  - [ ] 5.5 Configure image display with `unoptimized` flag or standardized dimensions to guarantee staying within Vercel's 5,000 transform/month hobby limit.
+- [x] **5. General Gallery Upload & Slideshow**
+  - [x] 5.1 Implement `POST /api/upload` route handler accepting image file (`image/*`, ≤ 4.5 MB), uploading to Vercel Blob, and creating `Image` record linked to user.
+  - [x] 5.2 Build `UploadForm` client component at `app/(protected)/upload/page.tsx` with image preview and submission handling.
+  - [x] 5.3 Implement gallery server page at `app/gallery/page.tsx` querying published images from database.
+  - [x] 5.4 Build `GallerySlideshow` client component with 4-second auto-advance, manual next/prev controls, pause on hover, and `x / n` counter indicator.
+  - [x] 5.5 Configure image display with `unoptimized` flag or standardized dimensions to guarantee staying within Vercel's 5,000 transform/month hobby limit.
 
 - [ ] **6. Navigation, Layout & Event Countdown**
   - [ ] 6.1 Build root navigation header with dynamic session state (Sign In, Profile/Registration CTA, Gallery, Upload, Sign Out).
