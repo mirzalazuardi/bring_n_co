@@ -4,16 +4,18 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { EventCountdown } from '@/components/EventCountdown';
+import { ParallaxHero } from '@/components/ParallaxHero';
+import { Reveal } from '@/components/Reveal';
 import {
-  Sparkles,
   Shirt,
   Images,
   ShieldCheck,
   ArrowRight,
-  GraduationCap,
+  Camera,
+  Users,
 } from 'lucide-react';
 
-export const revalidate = 60; // 60s ISR for Vercel Hobby efficiency
+export const revalidate = 60;
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
@@ -28,120 +30,191 @@ export default async function HomePage() {
   const classes = ['IPA-1', 'IPA-2', 'IPA-3', 'IPS-1', 'IPS-2', 'IPS-3', 'IPS-4'];
 
   return (
-    <div className="bg-slate-950 text-slate-100 min-h-screen">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden py-16 sm:py-24 px-4 sm:px-6 lg:px-8 text-center border-b border-slate-900">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-800/40 via-transparent to-transparent pointer-events-none" />
+    <div className="min-h-screen">
+      {/* Hero — warm, grounded, asymmetric, with parallax depth layers */}
+      <section className="relative overflow-hidden bg-stone-50 dark:bg-gray-900 border-b border-stone-200 dark:border-gray-800">
+        <ParallaxHero>
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 lg:py-32">
+            <div className="grid lg:grid-cols-5 gap-12 items-center">
+              {/* Left content — 3 cols */}
+              <div className="lg:col-span-3 space-y-8">
+                {/* Display-serif year marker */}
+                <div className="flex items-center gap-4">
+                  <span className="font-display italic text-6xl sm:text-8xl font-black text-teal-600 dark:text-teal-400 leading-none tracking-tight">
+                    25
+                  </span>
+                  <div className="border-l-2 border-teal-200 dark:border-teal-800 pl-4 space-y-0.5">
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-400 dark:text-gray-500">
+                      Tahun
+                    </p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-400 dark:text-gray-500">
+                      Persahabatan
+                    </p>
+                  </div>
+                </div>
 
-        <div className="relative max-w-4xl mx-auto space-y-6">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-700/80 text-xs font-semibold text-slate-300 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-slate-300" />
-            <span>Celebrating 25 Years of Friendship & Achievements</span>
+                <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-stone-900 dark:text-gray-100 leading-[1.05] text-balance">
+                  Reuni Akbar
+                  <br />
+                  <span className="italic text-teal-600 dark:text-teal-400">
+                    SMA Negeri 14
+                  </span>
+                  <br />
+                  Bandung
+                </h1>
+
+                <p className="text-lg sm:text-xl text-stone-600 dark:text-gray-400 max-w-lg leading-relaxed">
+                  25 tahun berlalu, kenangan tetap hidup. Kembali bertemu teman
+                  sekelas, kenang masa muda, dan buat kenangan baru bersama.
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  {userRegistration ? (
+                    <Link
+                      href="/registration"
+                      className="btn-primary flex items-center gap-2"
+                    >
+                      <ShieldCheck className="w-4 h-4" />
+                      Status: {userRegistration.status}
+                    </Link>
+                  ) : (
+                    <Link
+                      href={session ? '/registration' : '/login'}
+                      className="btn-primary flex items-center gap-2 text-base"
+                    >
+                      <Shirt className="w-5 h-5" />
+                      Daftar Sekarang
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  )}
+
+                  <Link
+                    href="/gallery"
+                    className="btn-secondary flex items-center gap-2"
+                  >
+                    <Images className="w-4 h-4" />
+                    Lihat Galeri
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right — countdown, offset */}
+              <div className="lg:col-span-2">
+                <EventCountdown />
+              </div>
+            </div>
           </div>
+        </ParallaxHero>
+      </section>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-400">
-            High School Silver Year Reunion
-          </h1>
+      {/* Classes — casual, not a "banner" */}
+      <Reveal className="py-10 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-b border-stone-200 dark:border-gray-800">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+            <div className="flex items-center gap-2 text-sm font-medium text-stone-500 dark:text-gray-400 shrink-0">
+              <Users className="w-4 h-4" />
+              7 Angkatan
+            </div>
+            <div className="h-px sm:h-6 sm:w-px bg-stone-200 dark:bg-gray-700" />
+            <div className="flex flex-wrap gap-2">
+              {classes.map((cls) => (
+                <span
+                  key={cls}
+                  className="px-3 py-1.5 rounded-lg bg-stone-100 dark:bg-gray-800 text-sm font-medium text-stone-600 dark:text-gray-400 border border-stone-200 dark:border-gray-700 hover:border-teal-400 dark:hover:border-teal-600 hover:text-teal-700 dark:hover:text-teal-400 transition-colors cursor-default"
+                >
+                  {cls}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Reveal>
 
-          <p className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Welcome home alumni! Reconnect with classmates, reserve your commemorative 25th anniversary jersey, and relive our golden memories together.
+      {/* Features — asymmetric, not 3 identical cards */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-stone-50 dark:bg-gray-800/50">
+        <div className="max-w-6xl mx-auto space-y-6">
+          {/* Big feature — Jersey */}
+          <Reveal>
+            <div className="relative bg-white dark:bg-gray-800 rounded-2xl border border-stone-200 dark:border-gray-700 p-8 sm:p-10 overflow-hidden group hover:border-teal-300 dark:hover:border-teal-700 transition-colors">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-teal-50 dark:bg-teal-900/20 rounded-bl-[80px] -z-0" />
+              <div className="relative z-10 sm:max-w-md">
+                <div className="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center text-teal-600 dark:text-teal-400 mb-4">
+                  <Shirt className="w-5 h-5" />
+                </div>
+                <h3 className="font-display text-3xl font-bold text-stone-900 dark:text-gray-100 mb-3">
+                  Jersey Eksklusif 25 Tahun
+                </h3>
+                <p className="text-stone-600 dark:text-gray-400 leading-relaxed mb-4">
+                  Kain premium, desain khusus angkatan. Pilih ukuran S, M, L,
+                  atau XL — kaos kenangan yang cuma ada sekali seumur hidup.
+                </p>
+                <Link
+                  href={session ? '/registration' : '/login'}
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+                >
+                  Pesan jersey
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Two smaller features side by side */}
+          <Reveal>
+            <div className="grid sm:grid-cols-2 gap-6">
+              {/* Bank Proof */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-stone-200 dark:border-gray-700 p-6 sm:p-8 group hover:border-pink-300 dark:hover:border-pink-700 transition-colors">
+                <div className="w-10 h-10 rounded-lg bg-pink-100 dark:bg-pink-900/40 flex items-center justify-center text-pink-600 dark:text-pink-400 mb-4">
+                  <ShieldCheck className="w-5 h-5" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-stone-900 dark:text-gray-100 mb-2">
+                  Upload Bukti Bayar
+                </h3>
+                <p className="text-stone-600 dark:text-gray-400 text-sm leading-relaxed">
+                  Transfer bank, screenshot bukti, upload dari HP. Panitia
+                  verifikasi dan konfirmasi — langsung beres.
+                </p>
+              </div>
+
+              {/* Gallery */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl border border-stone-200 dark:border-gray-700 p-6 sm:p-8 group hover:border-orange-300 dark:hover:border-orange-700 transition-colors">
+                <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/40 flex items-center justify-center text-orange-600 dark:text-orange-400 mb-4">
+                  <Camera className="w-5 h-5" />
+                </div>
+                <h3 className="font-display text-xl font-bold text-stone-900 dark:text-gray-100 mb-2">
+                  Galeri Foto Kenangan
+                </h3>
+                <p className="text-stone-600 dark:text-gray-400 text-sm leading-relaxed">
+                  Foto masa SMA, foto terkini — slideshow live yang terus
+                  update. Upload foto sendiri, lihat foto teman.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* Footer CTA — simple, not salesy */}
+      <Reveal className="py-16 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-stone-200 dark:border-gray-800 text-center">
+        <div className="max-w-xl mx-auto space-y-4">
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-stone-900 dark:text-gray-100 text-balance">
+            Sudah siap kembali?
+          </h2>
+          <p className="text-stone-500 dark:text-gray-400">
+            Daftar sekarang, pilih jersey, dan sambung kembali dengan teman
+            lama.
           </p>
-
-          {/* Event Countdown */}
-          <div className="pt-4 pb-2">
-            <EventCountdown />
-          </div>
-
-          {/* Main Action CTAs */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            {userRegistration ? (
-              <Link
-                href="/registration"
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-200 font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg"
-              >
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Registration Status: {userRegistration.status}</span>
-              </Link>
-            ) : (
-              <Link
-                href={session ? '/registration' : '/login'}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-slate-100 via-slate-200 to-slate-400 text-slate-950 font-extrabold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-xl shadow-slate-900/50"
-              >
-                <Shirt className="w-4 h-4" />
-                <span>Complete Reunion Registration</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            )}
-
+          <div className="pt-2">
             <Link
-              href="/gallery"
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-300 font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+              href={session ? '/registration' : '/login'}
+              className="btn-primary inline-flex items-center gap-2"
             >
-              <Images className="w-4 h-4" />
-              <span>Explore Memory Gallery</span>
+              Mulai Daftar
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
-      </section>
-
-      {/* Graduating Classes Banner */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 border-b border-slate-900 bg-slate-900/40">
-        <div className="max-w-5xl mx-auto text-center space-y-4">
-          <div className="flex items-center justify-center gap-2 text-xs uppercase tracking-widest text-slate-400 font-semibold">
-            <GraduationCap className="w-4 h-4 text-slate-400" />
-            Welcoming Alumni Across All 7 Classes
-          </div>
-          <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3">
-            {classes.map((cls) => (
-              <span
-                key={cls}
-                className="px-4 py-2 rounded-xl bg-slate-800/80 border border-slate-700/80 text-xs sm:text-sm font-bold text-slate-200 shadow-sm"
-              >
-                Class of {cls}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Feature Highlights Grid */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1 */}
-          <div className="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-6 sm:p-8 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
-              <Shirt className="w-5 h-5" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-100">Official Silver Jersey</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Select your custom size (S, M, L, XL). High quality commemorative fabric customized with your graduating class.
-            </p>
-          </div>
-
-          {/* Card 2 */}
-          <div className="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-6 sm:p-8 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-100">Simple Bank Proof Upload</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Upload your bank transfer receipt directly from your phone. Our committee verifies and confirms your admission ticket.
-            </p>
-          </div>
-
-          {/* Card 3 */}
-          <div className="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-6 sm:p-8 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300">
-              <Images className="w-5 h-5" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-100">Community Photo Stream</h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
-              Browse the live slideshow showcasing old high school memories and present snapshots uploaded by classmates.
-            </p>
-          </div>
-        </div>
-      </section>
+      </Reveal>
     </div>
   );
 }

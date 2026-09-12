@@ -56,7 +56,7 @@
   - Verify: `npm test -- ParallaxHero`
   - Expected: render test passes — layers present; static render (no crash) under reduced motion
 
-- [ ] [MID] Compose homepage with new hero + reveals
+- [x] [MID] Compose homepage with new hero + reveals
   - File: `app/page.tsx`
   - Change: wrap hero content in `<ParallaxHero>` (session/registration-derived CTA passed as children); add `font-display` to hero h1, section headings, footer CTA heading; wrap class strip, feature cards, footer CTA in a reveal wrapper backed by `useScrollReveal`; hero content and all copy/CTAs otherwise unchanged
   - Context: current sections at `app/page.tsx:22-120` (hero), `:122-139` (class strip), `:141-216` (features), `:218-238` (footer CTA); page remains a Server Component
