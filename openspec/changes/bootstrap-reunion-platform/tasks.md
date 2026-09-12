@@ -11,11 +11,11 @@ Multi-subsystem greenfield full-stack implementation involving OAuth/Credentials
   - [x] 1.3 Install dev dependencies: `prisma`, `@types/bcryptjs`, `vitest`, `@testing-library/react`.
   - [x] 1.4 Configure environment validation helper with Zod in `lib/env.ts`.
 
-- [ ] **2. Database & Prisma Modeling**
-  - [ ] 2.1 Define PostgreSQL schema in `prisma/schema.prisma` (`User`, `Account`, `Session`, `VerificationToken`, `Registration`, `Image`).
-  - [ ] 2.2 Configure enums: `JerseySize` (`S`, `M`, `L`, `XL`), `ClassGroup` (`IPA-1`..`IPA-3`, `IPS-1`..`IPS-4`), `VerificationStatus` (`PENDING`, `APPROVED`, `REJECTED`).
-  - [ ] 2.3 Establish singleton Prisma Client in `lib/prisma.ts`.
-  - [ ] 2.4 Execute initial migration (`npx prisma migrate dev --name init`).
+- [x] **2. Database & Prisma Modeling**
+  - [x] 2.1 Define PostgreSQL schema in `prisma/schema.prisma` (`User`, `Account`, `Session`, `VerificationToken`, `Registration`, `Image`).
+  - [x] 2.2 Configure enums: `JerseySize` (`S`, `M`, `L`, `XL`), `ClassGroup` (`IPA-1`..`IPA-3`, `IPS-1`..`IPS-4`), `VerificationStatus` (`PENDING`, `APPROVED`, `REJECTED`).
+  - [x] 2.3 Establish singleton Prisma Client in `lib/prisma.ts`.
+  - [x] 2.4 Execute initial migration (`npx prisma migrate dev --name init`).
 
 - [ ] **3. Authentication System (NextAuth/Auth.js)**
   - [ ] 3.1 Configure `lib/auth.ts` with NextAuth options using JWT session strategy and PrismaAdapter.

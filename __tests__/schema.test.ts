@@ -1,0 +1,26 @@
+import { describe, it, expect } from 'vitest';
+import { JerseySize, ClassGroup, VerificationStatus } from '@prisma/client';
+import { prisma } from '../lib/prisma';
+
+describe('Prisma Schema and Client', () => {
+  it('should export correct enum constants', () => {
+    expect(JerseySize.S).toBe('S');
+    expect(JerseySize.M).toBe('M');
+    expect(JerseySize.L).toBe('L');
+    expect(JerseySize.XL).toBe('XL');
+
+    expect(ClassGroup.IPA_1).toBe('IPA_1');
+    expect(ClassGroup.IPS_4).toBe('IPS_4');
+
+    expect(VerificationStatus.PENDING).toBe('PENDING');
+    expect(VerificationStatus.APPROVED).toBe('APPROVED');
+    expect(VerificationStatus.REJECTED).toBe('REJECTED');
+  });
+
+  it('should instantiate prisma client', () => {
+    expect(prisma).toBeDefined();
+    expect(typeof prisma.user.findMany).toBe('function');
+    expect(typeof prisma.registration.findUnique).toBe('function');
+    expect(typeof prisma.image.create).toBe('function');
+  });
+});
