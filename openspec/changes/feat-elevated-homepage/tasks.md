@@ -15,7 +15,7 @@
   - Verify: `npm run lint && npm run build`
   - Expected: build passes; `.font-display` utility renders Playfair on any element; no layout shift beyond font swap
 
-- [ ] [MID] Create `useParallax` hook
+- [x] [MID] Create `useParallax` hook
   - File: `components/useParallax.ts` (new)
   - Change: add
     ```ts
