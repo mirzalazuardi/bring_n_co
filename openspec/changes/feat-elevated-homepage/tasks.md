@@ -45,7 +45,7 @@
   - Verify: `npm test -- useScrollReveal`
   - Expected: unit tests pass — flips once, never un-flips; immediate `true` under reduced motion
 
-- [ ] [MID] Build `ParallaxHero` component
+- [x] [MID] Build `ParallaxHero` component
   - File: `components/ParallaxHero.tsx` (new)
   - Change: add
     ```tsx

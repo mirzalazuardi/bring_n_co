@@ -12,7 +12,7 @@ export interface ParallaxState {
 }
 
 interface UseParallaxReturn extends ParallaxState {
-  ref: React.RefObject<HTMLDivElement | null>;
+  ref: React.RefObject<HTMLDivElement>;
 }
 
 const SM_BREAKPOINT = 640;
@@ -30,7 +30,7 @@ const FINE_POINTER_QUERY = '(pointer: fine)';
  * fine pointer (mouse/trackpad).
  */
 export function useParallax(): UseParallaxReturn {
-  const ref = useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
   const [active, setActive] = useState(false);

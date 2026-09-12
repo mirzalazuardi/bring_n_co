@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 interface UseScrollRevealReturn {
-  ref: React.RefObject<HTMLDivElement | null>;
+  ref: React.RefObject<HTMLDivElement>;
   /** True once the element has entered the viewport (or immediately under reduced motion). Flips at most once. */
   revealed: boolean;
 }
@@ -22,7 +22,7 @@ const ROOT_MARGIN = '0px 0px -10% 0px';
  * immediately so content is never hidden from motion-sensitive users.
  */
 export function useScrollReveal(): UseScrollRevealReturn {
-  const ref = useRef<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
