@@ -16,7 +16,6 @@ import {
   JERSEY_SIZES,
   CLASS_GROUPS,
   MAX_FILE_SIZE_BYTES,
-  type RegistrationFormData,
 } from '@/lib/validations/registration';
 
 interface ExistingRegistration {

@@ -45,8 +45,8 @@ Multi-subsystem greenfield full-stack implementation involving OAuth/Credentials
   - [x] 6.2 Build `EventCountdown` client component displaying Days, Hours, Minutes, Seconds with `setInterval` cleanup and post-event state ("Event has started!").
   - [x] 6.3 Assemble homepage at `app/page.tsx` with hero section, reunion details, countdown timer, and quick CTAs.
 
-- [ ] **7. Security Guardrails & Verification**
-  - [ ] 7.1 Enforce client-side file size guards (< 4 MB) preventing 413 Payload Too Large errors on Vercel.
-  - [ ] 7.2 Implement server-side MIME type whitelist verification (images + PDF for payment proofs; JPEG/PNG/WebP for gallery).
-  - [ ] 7.3 Write unit and route handler integration tests with Vitest.
-  - [ ] 7.4 Verify `npm run lint` and `npm run build` succeed with zero errors.
+- [x] **7. Security Guardrails & Verification**
+  - [x] 7.1 Enforce client-side file size guards (< 4 MB) preventing 413 Payload Too Large errors on Vercel.
+  - [x] 7.2 Implement server-side MIME type whitelist verification (images + PDF for payment proofs; JPEG/PNG/WebP for gallery).
+  - [x] 7.3 Write unit and route handler integration tests with Vitest.
+  - [x] 7.4 Verify `npm run lint` and `npm run build` succeed with zero errors.

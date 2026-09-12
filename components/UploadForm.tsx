@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Image as ImageIcon, Upload, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
+import { Image as ImageIcon, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
 
 const MAX_IMAGE_SIZE = 4 * 1024 * 1024;
 
@@ -112,7 +112,6 @@ export function UploadForm() {
         {preview ? (
           <div className="space-y-3">
             <div className="relative w-full max-w-sm mx-auto h-48 rounded-lg overflow-hidden border border-slate-700">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={preview}
                 alt="Selected preview"

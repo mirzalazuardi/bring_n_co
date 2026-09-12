@@ -11,7 +11,6 @@ import {
   ShieldCheck,
   ArrowRight,
   GraduationCap,
-  Users,
 } from 'lucide-react';
 
 export const revalidate = 60; // 60s ISR for Vercel Hobby efficiency
