@@ -33,7 +33,7 @@
   - Verify: `npm run lint && npm run build`
   - Expected: hero opens with the pin badge; light mode reads mint-forward; dark mode unchanged; CTAs untouched
 
-- [ ] [MID] Update design docs
+- [x] [MID] Update design docs
   - File: `DESIGN.md`
   - Change: add a "Brand Alignment (Pin)" section — Space Grotesk as heading voice, the pin palette usage map (mint field, silver, five accent blocks), and the PinMark25 component reference
   - Context: DESIGN.md is the in-repo design system doc; palette table already lists the pin colors
@@ -42,5 +42,5 @@
 
 ## Verification
 
-- [ ] [LOW] Full suite: `npm run lint && npm run build && npm test`
-- [ ] [LOW] Manual smoke: prod-server HTML contains Space Grotesk variable on `<html>` and PinMark25 markup; visual check that badge echoes the pin (user compares against the physical pin/mockup)
+- [x] [LOW] Full suite: `npm run lint && npm run build && npm test` *(15/15 tests, build 11/11 pages)*
+- [x] [LOW] Manual smoke: prod-server HTML contains Space Grotesk variable on `<html>` and PinMark25 markup *(verified: space_grotesk variable, badge aria-label, 9 mint washes, 0 playfair/italic leftovers); visual check that badge echoes the pin (user compares against the physical pin/mockup)*
