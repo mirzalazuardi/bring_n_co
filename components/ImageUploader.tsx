@@ -149,9 +149,25 @@ export function ImageUploader({ maxSizeMb }: ImageUploaderProps) {
         access: 'public',
         handleUploadUrl: '/api/images/upload',
         contentType: file.type,
+        // The token request carries only pathname/clientPayload/multipart —
+        // the server gate reads declared size/type from this channel.
+        clientPayload: JSON.stringify({ size: file.size, contentType: file.type }),
         onUploadProgress: (p) => setProgress(Math.round(p.percentage)),
       });
       setImageId(id);
+
+      // Finalize: server verifies the blob and queues the job. Required on
+      // localhost (Blob's completion callback can't reach localhost) and a
+      // safety net in production. 409 = blob not visible yet → brief retry.
+      let finalized = false;
+      for (let attempt = 0; attempt < 3 && !finalized; attempt++) {
+        if (attempt > 0) {
+          await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+        }
+        const res = await fetch(`/api/images/${id}/finalize`, { method: 'POST' });
+        if (res.ok) finalized = true;
+      }
+      if (!finalized) throw new Error('finalize failed');
 
       // Attach optional metadata (best-effort — never blocks the pipeline)
       if (title.trim() || description.trim()) {
@@ -171,9 +187,11 @@ export function ImageUploader({ maxSizeMb }: ImageUploaderProps) {
       setError(
         /client token/i.test(raw)
           ? 'Gagal menyiapkan unggahan. Layanan penyimpanan belum terkonfigurasi — hubungi panitia atau coba lagi nanti.'
-          : raw
-            ? `Gagal mengunggah: ${raw}`
-            : 'Terjadi kesalahan saat mengunggah.',
+          : /finalize failed/i.test(raw)
+            ? 'Unggahan selesai, tetapi gagal mendaftarkan pemrosesan. Coba "Proses Ulang" atau unggah lagi.'
+            : raw
+              ? `Gagal mengunggah: ${raw}`
+              : 'Terjadi kesalahan saat mengunggah.',
       );
     }
   };

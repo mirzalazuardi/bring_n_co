@@ -70,8 +70,8 @@ npm run test
 
 `/upload` → `components/ImageUploader.tsx`:
 
-1. Client pre-validates size/type, uploads **directly to Vercel Blob** via `handleUpload` (`POST /api/images/upload` mints a narrowly-scoped token — requires `BLOB_READ_WRITE_TOKEN` server-side; there is intentionally no mock fallback).
-2. Blob's `onUploadCompleted` creates the `ImageAsset` row (`queued`) and triggers the durable job.
+1. Client pre-validates size/type, uploads **directly to Vercel Blob** via `handleUpload` (`POST /api/images/upload` mints a narrowly-scoped token — requires `BLOB_READ_WRITE_TOKEN` server-side; there is intentionally no mock fallback). Client-declared size/type ride the SDK's `clientPayload` channel; the signed token enforces them and the worker re-validates from actual bytes.
+2. Finalize (two redundant paths into one idempotent helper): the uploader calls `POST /api/images/:id/finalize` — the server verifies the blob with `head()` on the deterministic key (SSRF-safe) and queues the job. This is **required on localhost**, where Blob's server-to-server `onUploadCompleted` callback cannot reach; in production the callback does the same thing.
 3. The Trigger.dev task (`jobs/optimize-image.ts` → `lib/images/run-optimize.ts`) downloads with a byte cap, validates magic bytes (SVG/mismatch/corrupt rejected), and writes `thumbnail/medium/large` WebP q82 variants to `images/{imageId}/…` (EXIF-baked, never enlarged, metadata-stripped).
 4. The asset flips `completed` and the photo appears in the community gallery (idempotent link via `images.imageAssetId`). Failures carry a user-safe category; owners can retry from the UI (`POST /api/images/:id/reprocess`, allowed only from `failed`).
 
@@ -92,6 +92,14 @@ Credentials live in `.env` as `TRIGGER_SECRET_KEY` (`tr_prod_…`) and
 `TRIGGER_PROJECT_REF` (`proj_…`); set the same pair in Vercel's project
 environment.
 
+### Troubleshooting
+
+| Symptom | Cause / fix |
+|---|---|
+| `Failed to retrieve the client token` | The token route returned non-2xx and the SDK swallowed the status. Check dev-server logs: usually missing `BLOB_READ_WRITE_TOKEN` (503), an unauthenticated session (401), or a rejected gate (400). |
+| `Cannot use public access on a private store` | The Blob store was created with Access = Private (the dialog default). Not changeable — create a new **Public** store, connect it, restart dev. |
+| Upload sticks at `queued` | No Trigger.dev worker is connected (see above) — expected until `trigger.dev dev`/`deploy` runs. |
+
 ### Pipeline environment variables (see `.env.example`)
 
 | Variable | Purpose |
@@ -105,7 +113,7 @@ environment.
 1. Push your repository to GitHub or GitLab.
 2. Import the project into the [Vercel Dashboard](https://vercel.com).
 3. Add all environment variables from `.env.example` to Vercel Settings > Environment Variables.
-4. Attach a Vercel Blob store under Storage (this populates `BLOB_READ_WRITE_TOKEN`).
+4. Attach a Vercel Blob store under Storage (this populates `BLOB_READ_WRITE_TOKEN`). ⚠️ **Create the store with Access = Public** — client-direct uploads (`@vercel/blob/client`) require it, the access mode is locked at creation, and a private store fails every upload with `Cannot use public access on a private store` (fix = create a new public store and reconnect).
 5. Deploy; run `npx prisma migrate deploy` against the production database once.
 6. Connect Trigger.dev (section above) and deploy the task.
 

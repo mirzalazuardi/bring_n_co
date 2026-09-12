@@ -2,11 +2,10 @@ import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
 import { env } from '@/lib/env';
 import { uploadRequestSchema } from '@/lib/images/schemas';
 import { validateUploadRequest } from '@/lib/images/upload-gate';
-import { originalKey } from '@/lib/images/keys';
+import { upsertQueuedAndTrigger } from '@/lib/images/finalize';
 import { ACCEPTED_MIME_TYPES } from '@/lib/images/process';
 
 export const runtime = 'nodejs';
@@ -56,7 +55,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async (pathname) => {
+      onBeforeGenerateToken: async (pathname, clientPayload) => {
         // pathname must be exactly images/{uuid}/original — anything else is a probe
         const match = /^images\/([0-9a-fA-F-]{36})\/original$/.exec(pathname);
         if (!match) {
@@ -64,14 +63,22 @@ export async function POST(request: Request): Promise<NextResponse> {
         }
         const imageId = match[1] as string;
 
-        // Declared client metadata (advisory gate — the worker re-validates
-        // from bytes). Read defensively across SDK payload shapes.
-        const payload = (body as { payload?: { contentType?: string; size?: number; contentLength?: number } })
-          .payload;
+        // Client-declared metadata rides the SDK's clientPayload channel —
+        // the token-request payload itself carries only pathname/clientPayload/
+        // multipart, so size/type MUST come from the client options.
+        // Advisory gate: the worker still re-validates from actual bytes.
+        let declared: { size?: number; contentType?: string } | undefined;
+        try {
+          declared = clientPayload
+            ? (JSON.parse(clientPayload) as { size?: number; contentType?: string })
+            : undefined;
+        } catch {
+          declared = undefined;
+        }
         const parsed = uploadRequestSchema.safeParse({
           filename: pathname,
-          size: payload?.size ?? payload?.contentLength ?? 0,
-          mimeType: payload?.contentType ?? '',
+          size: declared?.size,
+          mimeType: declared?.contentType,
         });
         const gate = parsed.success
           ? validateUploadRequest(parsed.data)
@@ -88,7 +95,8 @@ export async function POST(request: Request): Promise<NextResponse> {
         };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
-        // Authenticated boundary: the payload was issued by us, tamper-proof
+        // Authenticated boundary: the payload was issued by us, tamper-proof.
+        // Shares the idempotent path with the client-driven finalize route.
         if (!tokenPayload) {
           throw new Error('Missing token payload');
         }
@@ -97,28 +105,12 @@ export async function POST(request: Request): Promise<NextResponse> {
           userId: string;
         };
 
-        // Idempotent on callback retries (unique originalKey). Blob client
-        // completion events carry no size — the worker records it from bytes.
-        await prisma.imageAsset.upsert({
-          where: { originalKey: originalKey(imageId) },
-          create: {
-            id: imageId,
-            userId: owner,
-            originalKey: originalKey(imageId),
-            originalUrl: blob.url,
-            originalMime: blob.contentType,
-            status: 'QUEUED',
-          },
-          update: {
-            originalUrl: blob.url,
-            originalMime: blob.contentType,
-          },
+        await upsertQueuedAndTrigger({
+          imageId,
+          userId: owner,
+          url: blob.url,
+          contentType: blob.contentType,
         });
-
-        // Queue the durable job. On failure the row stays QUEUED; the
-        // reprocess endpoint is the recovery path (documented in README).
-        const { tasks } = await import('@trigger.dev/sdk');
-        await tasks.trigger('optimize-image', { imageId });
       },
     });
 
