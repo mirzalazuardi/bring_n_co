@@ -30,6 +30,18 @@ export async function POST(request: Request): Promise<NextResponse> {
     );
   }
 
+  // Fail fast with a truthful error — otherwise the SDK wraps our 500 into
+  // the opaque "Failed to retrieve the client token" on the client.
+  if (!env.BLOB_READ_WRITE_TOKEN) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Image storage is not configured (BLOB_READ_WRITE_TOKEN missing).',
+      },
+      { status: 503 },
+    );
+  }
+
   let body: HandleUploadBody;
   try {
     body = await request.json();

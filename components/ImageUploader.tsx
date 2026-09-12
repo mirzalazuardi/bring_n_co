@@ -166,10 +166,14 @@ export function ImageUploader({ maxSizeMb }: ImageUploaderProps) {
       void pollStatus(id, 0);
     } catch (err) {
       setPhase('failed');
+      const raw = err instanceof Error ? err.message : '';
+      // The Blob SDK swallows our route's real status; map its opaque wraps
       setError(
-        err instanceof Error
-          ? `Gagal mengunggah: ${err.message}`
-          : 'Terjadi kesalahan saat mengunggah.',
+        /client token/i.test(raw)
+          ? 'Gagal menyiapkan unggahan. Layanan penyimpanan belum terkonfigurasi — hubungi panitia atau coba lagi nanti.'
+          : raw
+            ? `Gagal mengunggah: ${raw}`
+            : 'Terjadi kesalahan saat mengunggah.',
       );
     }
   };
