@@ -23,7 +23,7 @@ Spec source: user-provided production spec (pasted 2026-09-12); filed in `propos
   - Expected: env tests still pass; new vars parse with defaults; no secrets committed
   - DONE criteria: scenarios in REQ-IMGPIPE-006 (config) hold
 
-- [ ] [HIGH] Prisma `ImageAsset` model + migration
+- [x] [HIGH] Prisma `ImageAsset` model + migration
   - Depends on: T1
   - Context anchors:
     * Read `prisma/schema.prisma` (existing models, enum style, `@@map` snake_case convention)
@@ -40,7 +40,7 @@ Spec source: user-provided production spec (pasted 2026-09-12); filed in `propos
   - Expected: schema valid; client regenerated; migration file committed
   - DONE criteria: REQ-IMGPIPE-002 scenarios
 
-- [ ] [HIGH] Zod schemas + storage-key module + Sharp processing module
+- [x] [HIGH] Zod schemas + storage-key module + Sharp processing module
   - Depends on: T1
   - Context anchors:
     * Read `__tests__/registration-validation.test.ts` (Zod test style)

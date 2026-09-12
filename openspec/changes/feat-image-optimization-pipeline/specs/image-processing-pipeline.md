@@ -76,7 +76,7 @@ The system MUST produce WebP variants at maximum widths 320/768/1440 with preser
 
 - **Given** a 200×100 source
 - **When** variants are generated
-- **Then** only variants with max width ≤ 200 are emitted, each exactly 200×100
+- **Then** the thumbnail is emitted at 200×100 (never enlarged) and the medium/large variants are omitted
 
 #### Scenario: EXIF orientation corrected
 
