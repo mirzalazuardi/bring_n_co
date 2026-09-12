@@ -15,7 +15,7 @@
   - Verify: `npm run lint && npm run build`
   - Expected: headings render in Space Grotesk on all pages; build green; no variable-name churn
 
-- [ ] [MID] Build `PinMark25` color-blocked badge
+- [x] [MID] Build `PinMark25` color-blocked badge
   - File: `components/PinMark25.tsx` (new)
   - Change: add
     ```tsx
