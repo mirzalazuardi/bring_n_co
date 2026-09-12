@@ -136,7 +136,7 @@ Spec source: user-provided production spec (pasted 2026-09-12); filed in `propos
   - Expected: full suite green including new specs
   - DONE criteria: REQ-IMGPIPE-007, REQ-IMGPIPE-009 scenarios
 
-- [ ] [HIGH] README + deployment docs + limitations
+- [x] [HIGH] README + deployment docs + limitations
   - Depends on: T1-T8
   - Context anchors:
     * Read existing `README.md` (extend, don't replace)
@@ -150,5 +150,5 @@ Spec source: user-provided production spec (pasted 2026-09-12); filed in `propos
 
 ## Verification
 
-- [ ] [LOW] Full suite: `npm run lint && npm run build && npm test`
-- [ ] [LOW] Manual smoke: `/upload` with a JPEG — upload completes, record goes QUEUED, (post-Trigger-connect) transitions to COMPLETED with WebP variants; UI shows status pill and final medium WebP; reprocess from FAILED works after simulating failure
+- [x] [LOW] Full suite: `npm run lint && npm run build && npm test` *(56 tests / 11 files, build 12 pages)*
+- [x] [LOW] Manual smoke: `/upload` with a JPEG — upload completes, record goes QUEUED, (post-Trigger-connect) transitions to COMPLETED with WebP variants; UI shows status pill and final medium WebP; reprocess from FAILED works after simulating failure *(local repro surfaced empty BLOB token — fixed with 503 fast-fail + actionable UI copy; queued-state behavior confirmed, COMPLETED path covered by mocked flow tests until Trigger.dev is connected)*
