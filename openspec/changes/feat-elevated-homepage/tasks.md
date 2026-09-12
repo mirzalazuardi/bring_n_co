@@ -63,7 +63,7 @@
   - Verify: `npm run lint && npm run build`
   - Expected: above-the-fold content renders identically at first paint; below-fold sections reveal once on scroll; light and dark themes both legible
 
-- [ ] [MID] Token & utility polish
+- [x] [MID] Token & utility polish
   - File: `app/globals.css`, `tailwind.config.ts`
   - Change: add `.reveal` utility classes (opacity/translate transition, 500ms ease-out); add grain-texture utility; extend `theme.extend.transitionTimingFunction` with a slow easing; extend the existing `prefers-reduced-motion` guard at `app/globals.css:76-83` to neutralize reveal/parallax classes
   - Context: existing reduced-motion global guard must be extended, not duplicated

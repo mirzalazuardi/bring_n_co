@@ -102,6 +102,10 @@ const config: Config = {
         // Display serif voice for headings (loaded via next/font in app/layout.tsx)
         display: ["var(--font-display)", "Georgia", "serif"],
       },
+      transitionTimingFunction: {
+        // Gentle long-deceleration curve for scroll reveals
+        "out-slow": "cubic-bezier(0.22, 1, 0.36, 1)",
+      },
       boxShadow: {},
     },
   },
