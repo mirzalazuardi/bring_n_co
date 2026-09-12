@@ -17,14 +17,14 @@ Multi-subsystem greenfield full-stack implementation involving OAuth/Credentials
   - [x] 2.3 Establish singleton Prisma Client in `lib/prisma.ts`.
   - [x] 2.4 Execute initial migration (`npx prisma migrate dev --name init`).
 
-- [ ] **3. Authentication System (NextAuth/Auth.js)**
-  - [ ] 3.1 Configure `lib/auth.ts` with NextAuth options using JWT session strategy and PrismaAdapter.
-  - [ ] 3.2 Implement `CredentialsProvider` with `bcryptjs` password comparison.
-  - [ ] 3.3 Implement `GoogleProvider` and `LinkedInProvider`.
-  - [ ] 3.4 Wire API route handler at `app/api/auth/[...nextauth]/route.ts`.
-  - [ ] 3.5 Implement user registration/signup API handler at `app/api/auth/register/route.ts` with email uniqueness and password hashing.
-  - [ ] 3.6 Create login & signup view at `app/(auth)/login/page.tsx` with credentials form and OAuth action buttons.
-  - [ ] 3.7 Add route protection middleware in `middleware.ts` for `/registration`, `/profile`, and `/upload`.
+- [x] **3. Authentication System (NextAuth/Auth.js)**
+  - [x] 3.1 Configure `lib/auth.ts` with NextAuth options using JWT session strategy and PrismaAdapter.
+  - [x] 3.2 Implement `CredentialsProvider` with `bcryptjs` password comparison.
+  - [x] 3.3 Implement `GoogleProvider` and `LinkedInProvider`.
+  - [x] 3.4 Wire API route handler at `app/api/auth/[...nextauth]/route.ts`.
+  - [x] 3.5 Implement user registration/signup API handler at `app/api/auth/register/route.ts` with email uniqueness and password hashing.
+  - [x] 3.6 Create login & signup view at `app/(auth)/login/page.tsx` with credentials form and OAuth action buttons.
+  - [x] 3.7 Add route protection middleware in `middleware.ts` for `/registration`, `/profile`, and `/upload`.
 
 - [ ] **4. Reunion Registration & Payment Proof Pipeline**
   - [ ] 4.1 Define registration Zod schema (`jerseySize`, `classGroup`, `phone`, file size/mime check).
