@@ -77,15 +77,20 @@ npm run test
 
 ### Connecting Trigger.dev (required for processing)
 
-Until connected, uploads stay `queued` (the UI and `reprocess` recover them later).
+`trigger.config.ts` (project ref, `dirs: ['jobs']`, retry defaults) and the
+`optimize-image` task are already wired. Until a worker is connected, uploads
+stay `queued` (the UI and `reprocess` recover them later).
 
 ```bash
-npx trigger.dev@latest init
-# → writes TRIGGER_SECRET_KEY / TRIGGER_PROJECT_REF into .env
-npx trigger.dev@latest deploy --target prod   # registers the optimize-image task
+npx trigger.dev login                      # one-time browser auth
+npx trigger.dev dev                        # local worker — processes queued runs
+# or, for the deployed app:
+npx trigger.dev deploy --target prod       # registers optimize-image in the cloud
 ```
 
-Set the same two variables in Vercel's project environment. Local task testing: `npx trigger.dev@latest dev`.
+Credentials live in `.env` as `TRIGGER_SECRET_KEY` (`tr_prod_…`) and
+`TRIGGER_PROJECT_REF` (`proj_…`); set the same pair in Vercel's project
+environment.
 
 ### Pipeline environment variables (see `.env.example`)
 
