@@ -26,12 +26,12 @@ Multi-subsystem greenfield full-stack implementation involving OAuth/Credentials
   - [x] 3.6 Create login & signup view at `app/(auth)/login/page.tsx` with credentials form and OAuth action buttons.
   - [x] 3.7 Add route protection middleware in `middleware.ts` for `/registration`, `/profile`, and `/upload`.
 
-- [ ] **4. Reunion Registration & Payment Proof Pipeline**
-  - [ ] 4.1 Define registration Zod schema (`jerseySize`, `classGroup`, `phone`, file size/mime check).
-  - [ ] 4.2 Implement `POST /api/registration` route handler parsing `FormData`, uploading payment proof to Vercel Blob (`put()`), and upserting `Registration` in DB.
-  - [ ] 4.3 Implement `GET /api/registration` route handler returning current user's registration and proof URL.
-  - [ ] 4.4 Build `RegistrationForm` client component in `app/(protected)/registration/page.tsx` with size selector, class selector, phone input, file dropzone, and progress indicator.
-  - [ ] 4.5 Add visual badge for verification status (`PENDING`, `APPROVED`, `REJECTED`) on user registration page.
+- [x] **4. Reunion Registration & Payment Proof Pipeline**
+  - [x] 4.1 Define registration Zod schema (`jerseySize`, `classGroup`, `phone`, file size/mime check).
+  - [x] 4.2 Implement `POST /api/registration` route handler parsing `FormData`, uploading payment proof to Vercel Blob (`put()`), and upserting `Registration` in DB.
+  - [x] 4.3 Implement `GET /api/registration` route handler returning current user's registration and proof URL.
+  - [x] 4.4 Build `RegistrationForm` client component in `app/(protected)/registration/page.tsx` with size selector, class selector, phone input, file dropzone, and progress indicator.
+  - [x] 4.5 Add visual badge for verification status (`PENDING`, `APPROVED`, `REJECTED`) on user registration page.
 
 - [ ] **5. General Gallery Upload & Slideshow**
   - [ ] 5.1 Implement `POST /api/upload` route handler accepting image file (`image/*`, ≤ 4.5 MB), uploading to Vercel Blob, and creating `Image` record linked to user.
