@@ -73,7 +73,7 @@ Spec source: user-provided production spec (pasted 2026-09-12); filed in `propos
   - Expected: route compiles; unit test covers handler classification logic where extractable (validation fn)
   - DONE criteria: REQ-IMGPIPE-001, REQ-IMGPIPE-005 scenarios
 
-- [ ] [HIGH] Durable optimization job (Trigger.dev task)
+- [x] [HIGH] Durable optimization job (Trigger.dev task)
   - Depends on: T3, T4
   - Context anchors:
     * Gravity result: `task({ id, run })` from `@trigger.dev/sdk/v3`; trigger via `tasks.trigger()`
