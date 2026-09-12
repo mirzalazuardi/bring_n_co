@@ -1,4 +1,4 @@
-import { head } from '@vercel/blob';
+import { head, BlobNotFoundError, BlobAccessError } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -63,10 +63,19 @@ export async function POST(
     return NextResponse.json({ success: true, data: { id: imageId, status: 'queued' } }, { status: 202 });
   } catch (error) {
     // BlobNotFoundError → upload hasn't landed (yet). No row, no job.
-    if (error instanceof Error && error.name === 'BlobNotFoundError') {
+    if (error instanceof BlobNotFoundError) {
       return NextResponse.json(
         { success: false, error: 'Upload not found — retry shortly.' },
         { status: 409 },
+      );
+    }
+    // Access error → store misconfiguration (e.g. private store with public
+    // client uploads). Actionable message, not a generic 500.
+    if (error instanceof BlobAccessError) {
+      console.error('finalize: Blob access error — check store access mode/token');
+      return NextResponse.json(
+        { success: false, error: 'Image storage is misconfigured (store access).' },
+        { status: 503 },
       );
     }
     console.error('POST /api/images/[id]/finalize error:', error);
