@@ -14,8 +14,10 @@ export type ClaimResult =
 /**
  * Claims an image for processing.
  * - Fresh run: QUEUED → PROCESSING (records jobRunId).
- * - Retry of the same Trigger.dev run: PROCESSING + matching jobRunId → kept.
- * - Anything else (another run's, COMPLETED, FAILED) → skip.
+ * - Retry of the same Trigger.dev run: PROCESSING or FAILED with matching
+ *   jobRunId → back to PROCESSING (the run recorded its last failure, but
+ *   it is entitled to retry — only the same run may un-fail itself).
+ * - Anything else (another run's claim, COMPLETED, FAILED by another run) → skip.
  */
 export async function claimForProcessing(imageId: string, jobRunId: string): Promise<ClaimResult> {
   const claimed = await prisma.imageAsset.updateMany({
@@ -23,6 +25,12 @@ export async function claimForProcessing(imageId: string, jobRunId: string): Pro
     data: { status: 'PROCESSING', jobRunId },
   });
   if (claimed.count === 1) return { outcome: 'claimed' };
+
+  const unfailed = await prisma.imageAsset.updateMany({
+    where: { id: imageId, status: 'FAILED', jobRunId },
+    data: { status: 'PROCESSING' },
+  });
+  if (unfailed.count === 1) return { outcome: 'reclaimed' };
 
   const mine = await prisma.imageAsset.updateMany({
     where: { id: imageId, status: 'PROCESSING', jobRunId },

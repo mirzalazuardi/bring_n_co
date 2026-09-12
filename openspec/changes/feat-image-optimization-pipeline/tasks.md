@@ -121,7 +121,7 @@ Spec source: user-provided production spec (pasted 2026-09-12); filed in `propos
   - Expected: `/upload` renders new uploader; build green; no SSR issues
   - DONE criteria: REQ-IMGPIPE-008 scenarios
 
-- [ ] [HIGH] Tests: pipeline, job, routes + integration strategy doc
+- [x] [HIGH] Tests: pipeline, job, routes + integration strategy doc
   - Depends on: T3, T5, T6
   - Context anchors:
     * Spec "Testing" list; Vitest node env (no DOM); existing mock style (no network/DB in unit tests)

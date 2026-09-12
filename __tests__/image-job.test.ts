@@ -34,16 +34,29 @@ describe('claimForProcessing', () => {
   it('reclaims when PROCESSING with the same run id (retry after crash)', async () => {
     updateMany
       .mockResolvedValueOnce({ count: 0 }) // not QUEUED anymore
+      .mockResolvedValueOnce({ count: 0 }) // not FAILED-by-this-run
       .mockResolvedValueOnce({ count: 1 }); // PROCESSING owned by this run
     const result = await claimForProcessing('img-1', 'run-1');
     expect(result).toEqual({ outcome: 'reclaimed' });
+  });
+
+  it('reclaims a FAILED image owned by the same run (transient retry)', async () => {
+    updateMany
+      .mockResolvedValueOnce({ count: 0 }) // not QUEUED
+      .mockResolvedValueOnce({ count: 1 }); // FAILED by this run → back to PROCESSING
+    const result = await claimForProcessing('img-1', 'run-1');
+    expect(result).toEqual({ outcome: 'reclaimed' });
+    expect(updateMany).toHaveBeenNthCalledWith(2, {
+      where: { id: 'img-1', status: 'FAILED', jobRunId: 'run-1' },
+      data: { status: 'PROCESSING' },
+    });
   });
 
   it('skips when another run owns the image', async () => {
     updateMany.mockResolvedValue({ count: 0 });
     const result = await claimForProcessing('img-1', 'run-2');
     expect(result).toEqual({ outcome: 'skip' });
-    expect(updateMany).toHaveBeenCalledTimes(2);
+    expect(updateMany).toHaveBeenCalledTimes(3);
   });
 });
 
