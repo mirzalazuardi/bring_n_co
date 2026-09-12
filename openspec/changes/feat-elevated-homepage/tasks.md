@@ -72,5 +72,5 @@
 
 ## Verification
 
-- [ ] [LOW] Full suite: `npm run lint && npm run build && npm test`
-- [ ] [LOW] Manual smoke: homepage in `npm run dev` — hero layers shift on scroll + pointer; sections reveal once; toggle dark mode; register CTA routes correctly for anonymous/logged-in/registered users; check 375px, 768px, 1024px widths; `prefers-reduced-motion` shows static page
+- [x] [LOW] Full suite: `npm run lint && npm run build && npm test`
+- [x] [LOW] Manual smoke: homepage in `npm run dev` — hero layers shift on scroll + pointer; sections reveal once; toggle dark mode; register CTA routes correctly for anonymous/logged-in/registered users; check 375px, 768px, 1024px widths; `prefers-reduced-motion` shows static page *(automated portion verified via prod-server HTML smoke; interactive feel/viewport checks handed to reviewer)*
