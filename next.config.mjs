@@ -5,6 +5,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        // Legacy rows uploaded before the Cloudinary migration
+        protocol: 'https',
         hostname: '*.public.blob.vercel-storage.com',
       },
       {

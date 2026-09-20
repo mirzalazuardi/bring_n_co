@@ -13,27 +13,15 @@ vi.mock('@/lib/prisma', () => ({
   },
 }));
 
-vi.mock('@vercel/blob', () => ({
-  put: vi.fn().mockImplementation(async (key: string) => ({
-    url: `https://test.blob.vercel-storage.com/${key}`,
-    pathname: key,
-    contentType: 'image/webp',
-  })),
-}));
-
-vi.mock('@/lib/env', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/lib/env')>();
-  return { env: { ...actual.env, BLOB_READ_WRITE_TOKEN: 'test-token' } };
-});
-
 import { prisma } from '@/lib/prisma';
-import { put as blobPut } from '@vercel/blob';
-import { runOptimizeImage } from '../lib/images/run-optimize';
+import { runOptimizeImage, type VariantPutter } from '../lib/images/run-optimize';
 
 const findUnique = vi.mocked(prisma.imageAsset.findUnique);
 const updateMany = vi.mocked(prisma.imageAsset.updateMany);
 const galleryUpsert = vi.mocked(prisma.image.upsert);
-const putMock = vi.mocked(blobPut);
+
+/** In-memory storage putter the runner depends on (DI seam). */
+const putVariant = vi.fn<VariantPutter>();
 
 async function jpegBuffer(width: number, height: number): Promise<Buffer> {
   return sharp({
@@ -49,7 +37,7 @@ function assetFixture(overrides: Partial<Record<string, unknown>> = {}) {
     id: '11111111-1111-4111-8111-111111111111',
     userId: 'user-1',
     originalKey: 'images/11111111-1111-4111-8111-111111111111/original',
-    originalUrl: 'https://test.blob.vercel-storage.com/images/x/original',
+    originalUrl: 'https://res.cloudinary.com/test-cloud/image/upload/images/x/original.jpg',
     originalMime: 'image/jpeg',
     originalSize: BigInt(1234),
     status: 'QUEUED',
@@ -78,6 +66,10 @@ function mockHappyPrisma(asset: ReturnType<typeof assetFixture>) {
 beforeEach(() => {
   vi.clearAllMocks();
   updateMany.mockReset();
+  putVariant.mockReset();
+  putVariant.mockImplementation(async (publicId: string) => ({
+    url: `https://res.cloudinary.com/test-cloud/image/upload/${publicId}.webp`,
+  }));
 });
 
 describe('runOptimizeImage — full flow', () => {
@@ -95,7 +87,7 @@ describe('runOptimizeImage — full flow', () => {
 
     const result = await runOptimizeImage(assetFixture().id, 'run-1', {
       prisma,
-      blobPut,
+      putVariant,
     });
 
     expect(result).toEqual({
@@ -103,13 +95,13 @@ describe('runOptimizeImage — full flow', () => {
       variants: ['thumbnail', 'medium', 'large'],
     });
 
-    // 3 deterministic variant uploads
-    expect(putMock).toHaveBeenCalledTimes(3);
-    const keys = putMock.mock.calls.map((c) => c[0]);
-    expect(keys).toEqual([
-      'images/11111111-1111-4111-8111-111111111111/thumbnail.webp',
-      'images/11111111-1111-4111-8111-111111111111/medium.webp',
-      'images/11111111-1111-4111-8111-111111111111/large.webp',
+    // 3 deterministic variant uploads (extension-less Cloudinary public ids)
+    expect(putVariant).toHaveBeenCalledTimes(3);
+    const publicIds = putVariant.mock.calls.map((c) => c[0]);
+    expect(publicIds).toEqual([
+      'images/11111111-1111-4111-8111-111111111111/thumbnail',
+      'images/11111111-1111-4111-8111-111111111111/medium',
+      'images/11111111-1111-4111-8111-111111111111/large',
     ]);
 
     // completion write carries WebP variants + source dims
@@ -132,9 +124,9 @@ describe('runOptimizeImage — full flow', () => {
 
   it('is idempotent: already-COMPLETED assets are not reprocessed', async () => {
     findUnique.mockResolvedValue(assetFixture({ status: 'COMPLETED' }) as never);
-    const result = await runOptimizeImage(assetFixture().id, 'run-2', { prisma, blobPut });
+    const result = await runOptimizeImage(assetFixture().id, 'run-2', { prisma, putVariant });
     expect(result).toEqual({ status: 'already_completed' });
-    expect(putMock).not.toHaveBeenCalled();
+    expect(putVariant).not.toHaveBeenCalled();
     expect(updateMany).not.toHaveBeenCalled();
   });
 
@@ -142,9 +134,9 @@ describe('runOptimizeImage — full flow', () => {
     findUnique.mockResolvedValue(assetFixture() as never);
     // claim attempts all miss
     updateMany.mockResolvedValue({ count: 0 });
-    const result = await runOptimizeImage(assetFixture().id, 'run-other', { prisma, blobPut });
+    const result = await runOptimizeImage(assetFixture().id, 'run-other', { prisma, putVariant });
     expect(result).toEqual({ status: 'skipped' });
-    expect(putMock).not.toHaveBeenCalled();
+    expect(putVariant).not.toHaveBeenCalled();
   });
 
   it('marks FAILED without retry on corrupt input (permanent)', async () => {
@@ -154,7 +146,7 @@ describe('runOptimizeImage — full flow', () => {
     );
     mockHappyPrisma(assetFixture());
 
-    const result = await runOptimizeImage(assetFixture().id, 'run-1', { prisma, blobPut });
+    const result = await runOptimizeImage(assetFixture().id, 'run-1', { prisma, putVariant });
 
     expect(result).toEqual({ status: 'failed_permanent', category: 'INVALID_FILE' });
     const failure = updateMany.mock.calls.find(
@@ -170,10 +162,10 @@ describe('runOptimizeImage — full flow', () => {
       new Response(new Uint8Array(buffer), { status: 200 }),
     );
     mockHappyPrisma(assetFixture());
-    putMock.mockRejectedValueOnce(new Error('blob 503'));
+    putVariant.mockRejectedValueOnce(new Error('storage 503'));
 
     await expect(
-      runOptimizeImage(assetFixture().id, 'run-1', { prisma, blobPut }),
+      runOptimizeImage(assetFixture().id, 'run-1', { prisma, putVariant }),
     ).rejects.toThrow('Could not store the optimized image.');
 
     const failure = updateMany.mock.calls.find(
@@ -191,8 +183,8 @@ describe('runOptimizeImage — full flow', () => {
     );
     mockHappyPrisma(assetFixture());
 
-    const result = await runOptimizeImage(assetFixture().id, 'run-1', { prisma, blobPut });
+    const result = await runOptimizeImage(assetFixture().id, 'run-1', { prisma, putVariant });
     expect(result).toEqual({ status: 'failed_permanent', category: 'FILE_TOO_LARGE' });
-    expect(putMock).not.toHaveBeenCalled();
+    expect(putVariant).not.toHaveBeenCalled();
   });
 });

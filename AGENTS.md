@@ -7,9 +7,9 @@ A modern full-stack web portal for a high school silver year (25th) reunion, dep
 - **Users:** High school alumni across 7 graduating classes (IPA-1 to IPA-3, IPS-1 to IPS-4).
 - **Critical User Flows:**
   1. Multi-provider auth (Credentials + bcrypt, Google OAuth, LinkedIn OAuth) with JWT session.
-  2. Reunion registration with jersey size (S/M/L/XL), class, phone, and bank transfer proof upload to Vercel Blob.
+  2. Reunion registration with jersey size (S/M/L/XL), class, phone, and bank transfer proof upload to Cloudinary.
   3. Community gallery uploads, auto-advancing slideshow (~4s), and live event countdown timer.
-- **Pillars:** Next.js App Router (TypeScript), Prisma ORM + PostgreSQL, NextAuth/Auth.js, Vercel Blob.
+- **Pillars:** Next.js App Router (TypeScript), Prisma ORM + PostgreSQL, NextAuth/Auth.js, Cloudinary.
 
 ## Configuration
 - Environment variables required:
@@ -17,8 +17,9 @@ A modern full-stack web portal for a high school silver year (25th) reunion, dep
   - `NEXTAUTH_URL`, `NEXTAUTH_SECRET`: Auth.js JWT session config.
   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: Google OAuth provider credentials.
   - `LINKEDIN_CLIENT_ID`, `LINKEDIN_CLIENT_SECRET`: LinkedIn OAuth provider credentials.
-  - `BLOB_READ_WRITE_TOKEN`: Vercel Blob access token.
+  - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: Cloudinary storage credentials (all three required together).
   - `EVENT_DATE`: ISO 8601 string for countdown target (e.g. `2026-12-31T18:00:00+07:00`).
+  - `UPLOAD_OPEN_HOURS_AFTER_EVENT`: community uploads (gallery CTAs, top-bar link, `/upload`, upload APIs) stay hidden until N hours after `EVENT_DATE`; omit for always-open. Admin upload is never gated.
 
 ## Style Guide
 Clarity first: write predictable, readable TypeScript with explicit types and zero premature abstraction.

@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { put } from '@vercel/blob';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { env } from '@/lib/env';
+import { putStorageFile, isStorageConfigured } from '@/lib/storage/cloudinary';
+import { isUploadOpen, UPLOAD_CLOSED_MESSAGE } from '@/lib/upload-window';
 
 const MAX_IMAGE_SIZE_BYTES = 4 * 1024 * 1024; // 4.0 MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
@@ -19,6 +19,16 @@ export async function POST(request: Request) {
     }
 
     const userId = (session.user as { id: string }).id;
+
+    // Community upload window: closed until the configured offset after the
+    // event date. The admin console has its own route and is unaffected.
+    if (!isUploadOpen()) {
+      return NextResponse.json(
+        { success: false, error: UPLOAD_CLOSED_MESSAGE },
+        { status: 403 }
+      );
+    }
+
     const formData = await request.formData();
 
     const file = formData.get('file') as File | null;
@@ -64,17 +74,15 @@ export async function POST(request: Request) {
     }
 
     const ext = file.name.split('.').pop() || 'jpg';
-    const filename = `gallery/${userId}-${Date.now()}.${ext}`;
+    const publicId = `gallery/${userId}-${Date.now()}`;
 
     let imageUrl = '';
-    if (env.BLOB_READ_WRITE_TOKEN) {
-      const blob = await put(filename, file, {
-        access: 'public',
-        token: env.BLOB_READ_WRITE_TOKEN,
-      });
-      imageUrl = blob.url;
+    if (isStorageConfigured()) {
+      const stored = await putStorageFile(publicId, file, { contentType: file.type });
+      imageUrl = stored.url;
     } else {
-      imageUrl = `https://mock.blob.vercel-storage.com/${filename}`;
+      // Fallback for environments without live storage credentials (offline dev)
+      imageUrl = `https://mock.res.cloudinary.com/image/upload/${publicId}.${ext}`;
     }
 
     const image = await prisma.image.create({

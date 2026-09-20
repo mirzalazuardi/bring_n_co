@@ -56,13 +56,13 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
     if (!file) return;
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
-      setError('Selected file exceeds the 4 MB limit.');
+      setError('Ukuran file melebihi batas 4 MB.');
       return;
     }
 
     const validMimes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
     if (!validMimes.includes(file.type)) {
-      setError('Only JPG, PNG, WebP images or PDF documents are accepted.');
+      setError('Hanya file JPG, PNG, WebP atau PDF yang diterima.');
       return;
     }
 
@@ -82,7 +82,7 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
     setSuccess(null);
 
     if (!initialData && !selectedFile) {
-      setError('Please upload your bank transfer receipt proof.');
+      setError('Silakan unggah bukti transfer bank.');
       return;
     }
 
@@ -104,16 +104,16 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to submit reunion registration');
+        throw new Error(data.error || 'Gagal mengirim pendaftaran reuni');
       }
 
-      setSuccess('Reunion registration submitted successfully!');
+      setSuccess('Pendaftaran reuni berhasil dikirim!');
       router.refresh();
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unexpected error occurred while saving.');
+        setError('Terjadi kesalahan yang tidak terduga saat menyimpan.');
       }
     } finally {
       setIsSubmitting(false);
@@ -124,23 +124,23 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
     switch (status) {
       case 'APPROVED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950 text-emerald-300 border border-emerald-800">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
             <ShieldCheck className="w-3.5 h-3.5" />
-            Payment Verified & Approved
+            Pembayaran Terverifikasi
           </span>
         );
       case 'REJECTED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-950 text-rose-300 border border-rose-800">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800">
             <XCircle className="w-3.5 h-3.5" />
-            Proof Rejected (Please re-upload)
+            Bukti Ditolak (Silakan Unggah Ulang)
           </span>
         );
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-950 text-amber-300 border border-amber-800">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-800">
             <Clock className="w-3.5 h-3.5" />
-            Verification Pending
+            Menunggu Verifikasi
           </span>
         );
     }
@@ -148,38 +148,35 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Status Header if registered */}
       {initialData && (
-        <div className="bg-slate-800/80 border border-slate-700 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <p className="text-xs text-slate-400">Current Status</p>
-            <p className="text-sm font-medium text-slate-200 mt-0.5">
-              Registration submitted on {new Date().toLocaleDateString()}
+            <p className="text-xs text-gray-500 dark:text-gray-400">Status Saat Ini</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-0.5">
+              Pendaftaran dikirim pada {new Date().toLocaleDateString('id-ID')}
             </p>
           </div>
           {renderStatusBadge(initialData.status)}
         </div>
       )}
 
-      {/* Error & Success Messages */}
       {error && (
-        <div className="flex items-center gap-2 p-3 text-sm text-rose-300 bg-rose-950/50 border border-rose-800 rounded-lg">
+        <div className="flex items-center gap-2 p-3 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {success && (
-        <div className="flex items-center gap-2 p-3 text-sm text-emerald-300 bg-emerald-950/50 border border-emerald-800 rounded-lg">
+        <div className="flex items-center gap-2 p-3 text-sm text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded-lg">
           <CheckCircle className="w-4 h-4 flex-shrink-0" />
           <span>{success}</span>
         </div>
       )}
 
-      {/* Jersey Size Selector */}
       <div>
-        <label className="block text-sm font-semibold text-slate-200 mb-2">
-          Jersey Size <span className="text-rose-400">*</span>
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Ukuran Jersey <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-4 gap-3">
           {JERSEY_SIZES.map((size) => (
@@ -187,8 +184,8 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
               key={size}
               className={`flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all ${
                 jerseySize === size
-                  ? 'border-slate-300 bg-slate-800 text-white shadow'
-                  : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:border-slate-700'
+                  ? 'border-teal-300 dark:border-teal-600 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 shadow-sm'
+                  : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
               }`}
             >
               <input
@@ -200,39 +197,37 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
                 className="sr-only"
               />
               <span className="text-lg font-bold">{size}</span>
-              <span className="text-[11px] text-slate-500 mt-0.5">
-                {size === 'S' && 'Chest 96cm'}
-                {size === 'M' && 'Chest 102cm'}
-                {size === 'L' && 'Chest 108cm'}
-                {size === 'XL' && 'Chest 114cm'}
+              <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">
+                {size === 'S' && 'Dada 96cm'}
+                {size === 'M' && 'Dada 102cm'}
+                {size === 'L' && 'Dada 108cm'}
+                {size === 'XL' && 'Dada 114cm'}
               </span>
             </label>
           ))}
         </div>
       </div>
 
-      {/* Class Group Select */}
       <div>
-        <label className="block text-sm font-semibold text-slate-200 mb-2">
-          Graduating Class Group <span className="text-rose-400">*</span>
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Kelompok Kelulusan <span className="text-red-500">*</span>
         </label>
         <select
           value={classGroup}
           onChange={(e) => setClassGroup(e.target.value as (typeof CLASS_GROUPS)[number])}
-          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
         >
           {CLASS_GROUPS.map((cg) => (
             <option key={cg} value={cg}>
-              Class of {cg}
+              Kelas {cg}
             </option>
           ))}
         </select>
       </div>
 
-      {/* Phone Number */}
       <div>
-        <label className="block text-sm font-semibold text-slate-200 mb-2">
-          WhatsApp / Phone Number <span className="text-rose-400">*</span>
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Nomor WhatsApp / Telepon <span className="text-red-500">*</span>
         </label>
         <input
           type="tel"
@@ -240,22 +235,21 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="+62 812 3456 7890"
-          className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400"
+          className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
         />
-        <p className="text-xs text-slate-500 mt-1">
-          Used by committee for reunion announcements and jersey distribution.
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          Digunakan panitia untuk pengumuman reuni dan distribusi jersey.
         </p>
       </div>
 
-      {/* Bank Transfer Proof Upload */}
       <div>
-        <label className="block text-sm font-semibold text-slate-200 mb-2">
-          Bank Transfer Proof Receipt <span className="text-rose-400">*</span>
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Bukti Transfer Bank <span className="text-red-500">*</span>
         </label>
 
         <div
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-slate-700 hover:border-slate-500 bg-slate-800/40 rounded-xl p-6 text-center cursor-pointer transition-colors"
+          className="border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-teal-300 dark:hover:border-teal-600 bg-gray-50 dark:bg-gray-700 rounded-xl p-6 text-center cursor-pointer transition-colors"
         >
           <input
             ref={fileInputRef}
@@ -265,43 +259,41 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
             className="hidden"
           />
 
-          <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-          <p className="text-sm font-medium text-slate-200">
-            {selectedFile ? selectedFile.name : 'Click to select transfer proof receipt'}
+          <Upload className="w-8 h-8 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            {selectedFile ? selectedFile.name : 'Klik untuk memilih bukti transfer'}
           </p>
-          <p className="text-xs text-slate-400 mt-1">
-            Supports JPG, PNG, WebP or PDF (Max 4.0 MB)
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            Mendukung JPG, PNG, WebP atau PDF (Maks 4.0 MB)
           </p>
         </div>
 
-        {/* Existing file link or preview */}
         {filePreview && (
-          <div className="mt-3 p-3 bg-slate-800/60 rounded-xl border border-slate-700 flex items-center justify-between">
+          <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-slate-300" />
-              <span className="text-xs text-slate-300">
-                {selectedFile ? 'Ready to upload' : 'Previously submitted proof'}
+              <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              <span className="text-xs text-gray-600 dark:text-gray-300">
+                {selectedFile ? 'Siap diunggah' : 'Bukti yang sebelumnya dikirim'}
               </span>
             </div>
             <a
               href={filePreview}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-slate-300 underline hover:text-white"
+              className="text-xs text-teal-600 dark:text-teal-400 underline hover:text-teal-700 dark:hover:text-teal-300"
             >
-              View Document
+              Lihat Dokumen
             </a>
           </div>
         )}
       </div>
 
-      {/* Submit Action */}
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-3 px-6 bg-gradient-to-r from-slate-200 to-slate-400 text-slate-950 font-bold rounded-xl shadow hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm disabled:opacity-50"
+        className="w-full btn-primary flex items-center justify-center gap-2 text-sm disabled:opacity-50"
       >
-        {isSubmitting ? 'Submitting...' : initialData ? 'Update Registration' : 'Complete Registration'}
+        {isSubmitting ? 'Mengirim...' : initialData ? 'Perbarui Pendaftaran' : 'Selesaikan Pendaftaran'}
         <ArrowRight className="w-4 h-4" />
       </button>
     </form>

@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { put } from '@vercel/blob';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { env } from '@/lib/env';
+import { putStorageFile, isStorageConfigured } from '@/lib/storage/cloudinary';
 import {
   registrationFormSchema,
   validateProofFile,
@@ -111,19 +110,18 @@ export async function POST(request: Request) {
         );
       }
 
-      // Generate unique path
+      // Generate unique id (Cloudinary appends the detected format extension)
       const ext = proofFile.name.split('.').pop() || 'png';
-      const filename = `proofs/${userId}-${Date.now()}.${ext}`;
+      const publicId = `proofs/${userId}-${Date.now()}`;
 
-      if (env.BLOB_READ_WRITE_TOKEN) {
-        const blob = await put(filename, proofFile, {
-          access: 'public',
-          token: env.BLOB_READ_WRITE_TOKEN,
+      if (isStorageConfigured()) {
+        const stored = await putStorageFile(publicId, proofFile, {
+          contentType: proofFile.type,
         });
-        proofUrl = blob.url;
+        proofUrl = stored.url;
       } else {
-        // Fallback for environments without live Blob token (e.g. local offline dev)
-        proofUrl = `https://mock.blob.vercel-storage.com/${filename}`;
+        // Fallback for environments without live storage credentials (e.g. local offline dev)
+        proofUrl = `https://mock.res.cloudinary.com/image/upload/${publicId}.${ext}`;
       }
     } else if (!proofUrl) {
       return NextResponse.json(

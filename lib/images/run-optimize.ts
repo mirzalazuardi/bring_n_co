@@ -1,5 +1,4 @@
 import type { PrismaClient } from '@prisma/client';
-import { env } from '@/lib/env';
 import { claimForProcessing, markCompleted, markFailed } from '@/lib/images/claim';
 import { classifyError } from '@/lib/images/classify';
 import {
@@ -8,15 +7,21 @@ import {
   downloadWithLimit,
   ImageValidationError,
 } from '@/lib/images/process';
-import { variantKey } from '@/lib/images/keys';
+import { variantPublicId } from '@/lib/storage/cloudinary';
 import { variantMetaSchema, type VariantsMap } from '@/lib/images/schemas';
 
-/** Minimal shape of the Blob `put` the runner depends on (DI seam for tests/BullMQ). */
-export type BlobPutter = typeof import('@vercel/blob').put;
+/**
+ * Minimal shape of the storage `put` the runner depends on (DI seam for
+ * tests/BullMQ) — returns a delivery URL for the stored variant.
+ */
+export type VariantPutter = (
+  publicId: string,
+  buffer: Buffer,
+) => Promise<{ url: string }>;
 
 export interface RunDeps {
   prisma: PrismaClient;
-  blobPut: BlobPutter;
+  putVariant: VariantPutter;
 }
 
 export type RunResult =
@@ -36,7 +41,7 @@ export async function runOptimizeImage(
   jobRunId: string,
   deps: RunDeps,
 ): Promise<RunResult> {
-  const { prisma, blobPut } = deps;
+  const { prisma, putVariant } = deps;
   const log = (msg: string) => console.log(`[optimize-image ${imageId}] ${msg}`);
 
   const asset = await prisma.imageAsset.findUnique({ where: { id: imageId } });
@@ -69,28 +74,28 @@ export async function runOptimizeImage(
     // 3. Generate WebP variants (EXIF-baked, never enlarged, metadata-stripped)
     const { source, variants } = await buildVariants(buffer);
 
-    // 4. Upload variants to deterministic keys (safe overwrites on retry)
+    // 4. Upload variants under deterministic public_ids (safe overwrites on retry)
     const entries = await Promise.all(
       Object.entries(variants).map(async ([name, v]) => {
         if (!v) return null;
-        const key = variantKey(imageId, name as keyof typeof variants);
-        let blob;
+        const publicId = variantPublicId(imageId, name as keyof typeof variants);
+        let url: string;
         try {
-          blob = await blobPut(key, v.buffer, {
-            access: 'public',
-            contentType: 'image/webp',
-            token: env.BLOB_READ_WRITE_TOKEN,
-            addRandomSuffix: false,
-          });
-        } catch {
-          // Classify storage outages for retry semantics (transient, not permanent)
+          url = (await putVariant(publicId, v.buffer)).url;
+        } catch (err) {
+          // Surface the underlying cause (auth, network, quota…)
+          // before classifying as a transient storage outage for retry.
+          console.error(
+            `[optimize-image ${imageId}] storage put failed for ${publicId}:`,
+            err instanceof Error ? `${err.name}: ${err.message}` : err,
+          );
           throw new ImageValidationError('STORAGE_FAILED', 'Could not store the optimized image.');
         }
         return [
           name,
           variantMetaSchema.parse({
-            key,
-            url: blob.url,
+            key: publicId,
+            url,
             width: v.width,
             height: v.height,
             size: v.buffer.byteLength,

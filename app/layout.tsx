@@ -5,6 +5,7 @@ import { SessionProvider } from '@/components/SessionProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { StripBrowserExtensions } from '@/components/StripBrowserExtensions';
 import { Navbar } from '@/components/Navbar';
+import { isUploadOpen } from '@/lib/upload-window';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,6 +28,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Server-computed gate: hides the top-bar "Unggah" links until the
+  // configured offset after the event date. Admin paths are unaffected.
+  const uploadOpen = isUploadOpen();
+
   return (
     <html lang="id" className={`scroll-smooth ${inter.className} ${display.variable}`} suppressHydrationWarning>
       <head>
@@ -40,7 +45,7 @@ export default function RootLayout({
         <StripBrowserExtensions />
         <ThemeProvider>
           <SessionProvider>
-            <Navbar />
+            <Navbar uploadOpen={uploadOpen} />
             <main className="flex-1">{children}</main>
             <footer className="border-t border-stone-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-8 text-center text-sm text-stone-500 dark:text-gray-400">
               <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

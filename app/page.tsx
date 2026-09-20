@@ -53,13 +53,13 @@ export default async function HomePage() {
                 </div>
 
                 <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-stone-900 dark:text-gray-100 leading-[1.05] text-balance">
-                  Reuni Akbar
+                  Reuni Perak
                   <br />
                   <span className="text-teal-600 dark:text-teal-400">
-                    SMA Negeri 14
+                    SMAN 14 Bandung
                   </span>
                   <br />
-                  Bandung
+                  Angkatan 2001
                 </h1>
 
                 <p className="text-lg sm:text-xl text-stone-600 dark:text-gray-400 max-w-lg leading-relaxed">
@@ -112,7 +112,7 @@ export default async function HomePage() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
             <div className="flex items-center gap-2 text-sm font-medium text-stone-500 dark:text-gray-400 shrink-0">
               <Users className="w-4 h-4" />
-              7 Angkatan
+              7 Kelas
             </div>
             <div className="h-px sm:h-6 sm:w-px bg-stone-200 dark:bg-gray-700" />
             <div className="flex flex-wrap gap-2">

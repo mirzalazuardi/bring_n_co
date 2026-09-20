@@ -7,7 +7,7 @@ import { RegistrationForm } from '@/components/RegistrationForm';
 import { UserCheck } from 'lucide-react';
 
 export const metadata = {
-  title: 'Reunion Registration | Silver Reunion',
+  title: 'Pendaftaran Reuni | SMA Negeri 14 Bandung',
 };
 
 export default async function RegistrationPage() {
@@ -36,21 +36,21 @@ export default async function RegistrationPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-xl mx-auto">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 mb-4">
-            <UserCheck className="w-6 h-6 text-slate-300" />
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-teal-100 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 mb-4">
+            <UserCheck className="w-6 h-6 text-teal-600 dark:text-teal-400" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100">
-            Reunion Registration
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-gray-100">
+            Pendaftaran Reuni
           </h1>
-          <p className="text-sm text-slate-400 mt-2">
-            Welcome, {session.user.name || session.user.email}! Please provide your jersey sizing and payment confirmation below.
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            Selamat datang, {session.user.name || session.user.email}! Silakan isi ukuran jersey dan konfirmasi pembayaran Anda di bawah ini.
           </p>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 sm:p-8 shadow-sm">
           <RegistrationForm initialData={formattedData} />
         </div>
       </div>

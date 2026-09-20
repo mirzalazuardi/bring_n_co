@@ -1,7 +1,7 @@
 import { task } from '@trigger.dev/sdk';
-import { put } from '@vercel/blob';
 import { prisma } from '@/lib/prisma';
 import { runOptimizeImage } from '@/lib/images/run-optimize';
+import { putStorageFile } from '@/lib/storage/cloudinary';
 
 /**
  * Durable image optimization task (Trigger.dev v4) — thin wrapper around
@@ -23,5 +23,11 @@ export const optimizeImageTask = task({
     maxTimeoutInMs: 30_000,
   },
   run: async (payload: { imageId: string }, { ctx }) =>
-    runOptimizeImage(payload.imageId, ctx.run.id, { prisma, blobPut: put }),
+    runOptimizeImage(payload.imageId, ctx.run.id, {
+      prisma,
+      putVariant: (publicId, buffer) =>
+        putStorageFile(publicId, buffer, { contentType: 'image/webp' }).then((r) => ({
+          url: r.url,
+        })),
+    }),
 });

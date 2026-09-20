@@ -45,7 +45,7 @@ purple) around a chunky "25".
 | Mint field | `teal-300` | Dominant surface of the mark; echoed in light-mode section washes |
 | Silver ring | `silver-100..400` gradient | Frame of the mark; avoid as text color |
 | Accent blocks | `magenta-500`, `yellow-400`, `orange-400`, `blue-500`, `purple-500` | Small doses only — never full sections |
-| Year mark | `components/PinMark25.tsx` | Pure CSS/SVG server component, scales with size classes |
+| Year mark | `components/PinMark25.tsx` | Server component rendering the traced pin artwork (`public/25.svg`) via `next/image`; scales with size classes |
 | Heading voice | Space Grotesk via `--font-display` | Matches the pin's rounded, technical letterforms; no true italic — never apply `italic` |
 
 ## Typography

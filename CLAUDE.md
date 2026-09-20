@@ -17,7 +17,7 @@ A modern full-stack web portal for a high school silver year (25th) reunion, dep
   - `NEXTAUTH_URL`, `NEXTAUTH_SECRET`: Auth.js JWT session config.
   - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`: Google OAuth provider credentials.
   - `LINKEDIN_CLIENT_ID`, `LINKEDIN_CLIENT_SECRET`: LinkedIn OAuth provider credentials.
-  - `BLOB_READ_WRITE_TOKEN`: Vercel Blob access token.
+  - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`: Cloudinary storage credentials (all three required together).
   - `EVENT_DATE`: ISO 8601 string for countdown target (e.g. `2026-12-31T18:00:00+07:00`).
 
 ## Style Guide

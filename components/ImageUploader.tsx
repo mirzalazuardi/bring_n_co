@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { upload } from '@vercel/blob/client';
+import { useRouter } from 'next/navigation';
 import {
   AlertCircle,
   CheckCircle,
@@ -40,15 +40,27 @@ interface ImageUploaderProps {
   maxSizeMb: number;
 }
 
+interface DirectUploadParams {
+  uploadUrl: string;
+  params: Record<string, string>;
+  signature: string;
+  timestamp: string;
+  apiKey: string;
+  cloudName: string;
+}
+
 /**
- * Optimized gallery uploader: client-side pre-validation, direct-to-Blob
- * upload with progress, metadata attach, status polling with exponential
- * backoff (stops at terminal states), retry on failure, and clean unmount.
+ * Optimized gallery uploader: client-side pre-validation, signed direct-to-
+ * Cloudinary upload with progress, metadata attach, status polling with
+ * exponential backoff (stops at terminal states), retry on failure, and
+ * clean unmount.
  */
 export function ImageUploader({ maxSizeMb }: ImageUploaderProps) {
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cancelledRef = useRef(false);
 
   const [file, setFile] = useState<File | null>(null);
@@ -63,9 +75,10 @@ export function ImageUploader({ maxSizeMb }: ImageUploaderProps) {
 
   useEffect(() => {
     return () => {
-      // Unmount: stop polling, abort in-flight status requests
+      // Unmount: stop polling, abort in-flight status requests, cancel redirect
       cancelledRef.current = true;
       if (timerRef.current) clearTimeout(timerRef.current);
+      if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
       abortRef.current?.abort();
     };
   }, []);
@@ -105,6 +118,8 @@ export function ImageUploader({ maxSizeMb }: ImageUploaderProps) {
         if (data.status === 'completed') {
           setPhase('completed');
           setResultUrl(data.variants?.medium?.url ?? null);
+          // Brief success feedback, then hand off to the community gallery
+          redirectTimerRef.current = setTimeout(() => router.push('/gallery'), 1200);
           return;
         }
         if (data.status === 'failed') {
@@ -145,20 +160,45 @@ export function ImageUploader({ maxSizeMb }: ImageUploaderProps) {
 
     const id = crypto.randomUUID();
     try {
-      await upload(`images/${id}/original`, file, {
-        access: 'public',
-        handleUploadUrl: '/api/images/upload',
-        contentType: file.type,
-        // The token request carries only pathname/clientPayload/multipart —
-        // the server gate reads declared size/type from this channel.
-        clientPayload: JSON.stringify({ size: file.size, contentType: file.type }),
-        onUploadProgress: (p) => setProgress(Math.round(p.percentage)),
+      // 1. Get short-lived signed upload params from our server (the API
+      //    secret never reaches the browser; the signature pins public_id,
+      //    allowed formats, and max size).
+      const tokenRes = await fetch('/api/images/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageId: id, size: file.size, mimeType: file.type }),
+      });
+      if (!tokenRes.ok) {
+        const body = (await tokenRes.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(body?.error ?? 'Failed to prepare the upload');
+      }
+      const { data } = (await tokenRes.json()) as { success: boolean; data: DirectUploadParams };
+
+      // 2. Upload directly to Cloudinary with XHR so we keep progress events.
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', data.uploadUrl);
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            setProgress(Math.round((e.loaded / e.total) * 100));
+          }
+        };
+        xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`Upload gagal (${xhr.status}).`)));
+        xhr.onerror = () => reject(new Error('Terjadi kesalahan jaringan saat mengunggah.'));
+        const form = new FormData();
+        form.append('file', file);
+        form.append('api_key', data.apiKey);
+        form.append('timestamp', data.timestamp);
+        for (const [key, value] of Object.entries(data.params)) {
+          form.append(key, value);
+        }
+        form.append('signature', data.signature);
+        xhr.send(form);
       });
       setImageId(id);
 
-      // Finalize: server verifies the blob and queues the job. Required on
-      // localhost (Blob's completion callback can't reach localhost) and a
-      // safety net in production. 409 = blob not visible yet → brief retry.
+      // 3. Finalize: server verifies the asset and queues the job. 409 = not
+      //    visible yet → brief retry.
       let finalized = false;
       for (let attempt = 0; attempt < 3 && !finalized; attempt++) {
         if (attempt > 0) {
@@ -183,9 +223,8 @@ export function ImageUploader({ maxSizeMb }: ImageUploaderProps) {
     } catch (err) {
       setPhase('failed');
       const raw = err instanceof Error ? err.message : '';
-      // The Blob SDK swallows our route's real status; map its opaque wraps
       setError(
-        /client token/i.test(raw)
+        /menyiapkan unggahan|prepare the upload/i.test(raw)
           ? 'Gagal menyiapkan unggahan. Layanan penyimpanan belum terkonfigurasi — hubungi panitia atau coba lagi nanti.'
           : /finalize failed/i.test(raw)
             ? 'Unggahan selesai, tetapi gagal mendaftarkan pemrosesan. Coba "Proses Ulang" atau unggah lagi.'
@@ -305,7 +344,7 @@ export function ImageUploader({ maxSizeMb }: ImageUploaderProps) {
             <span>Kenangan berhasil dioptimalkan dan dipublikasikan ke galeri!</span>
           </div>
           {resultUrl && (
-            /* Dynamic Blob URL (not Next-managed) */
+            /* Dynamic Cloudinary URL (not Next-managed) */
             <img
               src={resultUrl}
               alt="Hasil optimasi"

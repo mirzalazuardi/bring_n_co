@@ -37,3 +37,13 @@ next-env.d.ts
 # codegraph & tools
 .codegraph/
 graphify-out/
+.neon
+
+# agent/tool state
+.agent/
+.freebuff/
+.omo/
+.playwright-mcp/
+
+# local env typo variant (contains real secrets)
+.env_local
