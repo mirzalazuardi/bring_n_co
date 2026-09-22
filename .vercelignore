@@ -1,0 +1,14 @@
+# Never upload local env files or secrets — all runtime env vars come from
+# the Vercel project settings (Production/Preview environments).
+.env
+.env.*
+.env_local
+!.env.example
+
+# Local-only symlinks and machine-specific paths (break builder stat())
+ai-agent_docs
+
+# Local tool state, never part of the deployment
+.vercel
+.codegraph
+graphify-out
