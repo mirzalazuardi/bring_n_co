@@ -36,6 +36,7 @@ A full-stack reunion management and community platform built for high school alu
 - Unit and route handler tests via Vitest in `__tests__/`.
 - Validate all incoming API request bodies using Zod schemas before processing.
 - Run `npm run lint` and `npm run build` as mandatory verification gates.
+- ESLint uses flat config (`eslint.config.mjs`, ESLint 9+) to match `eslint-config-next@16`; legacy `.eslintrc*` is unsupported. `package-lock.json` is committed — Vercel builds must resolve dependencies reproducibly.
 
 ## Git & PR Conventions
 - Branch naming: `feat/[change-id]`, `fix/[issue-id]`, `chore/[task-id]`.

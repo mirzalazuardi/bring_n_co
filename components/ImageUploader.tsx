@@ -103,52 +103,64 @@ export function ImageUploader({ maxSizeMb }: ImageUploaderProps) {
     setPhase('idle');
   };
 
+  // Poll with exponential backoff as an iteration loop instead of recursive
+  // setTimeout scheduling: avoids the pollStatus self-reference inside its own
+  // initializer (TDZ) and keeps `router` in the hook deps per react-hooks v7.
   const pollStatus = useCallback(
     async (id: string, attempt: number) => {
-      if (cancelledRef.current) return;
-      const controller = new AbortController();
-      abortRef.current = controller;
-      try {
-        const res = await fetch(`/api/images/${id}`, { signal: controller.signal });
-        if (res.status === 404) throw new Error('Image not found');
-        if (!res.ok) throw new Error('status fetch failed');
-        const body = (await res.json()) as { success: boolean; data: StatusPayload };
-        const data = body.data;
+      let current = attempt;
+      while (!cancelledRef.current) {
+        const controller = new AbortController();
+        abortRef.current = controller;
+        try {
+          const res = await fetch(`/api/images/${id}`, { signal: controller.signal });
+          if (res.status === 404) throw new Error('Image not found');
+          if (!res.ok) throw new Error('status fetch failed');
+          const body = (await res.json()) as { success: boolean; data: StatusPayload };
+          const data = body.data;
 
-        if (data.status === 'completed') {
-          setPhase('completed');
-          setResultUrl(data.variants?.medium?.url ?? null);
-          // Brief success feedback, then hand off to the community gallery
-          redirectTimerRef.current = setTimeout(() => router.push('/gallery'), 1200);
-          return;
-        }
-        if (data.status === 'failed') {
+          if (data.status === 'completed') {
+            setPhase('completed');
+            setResultUrl(data.variants?.medium?.url ?? null);
+            // Brief success feedback, then hand off to the community gallery
+            redirectTimerRef.current = setTimeout(() => router.push('/gallery'), 1200);
+            return;
+          }
+          if (data.status === 'failed') {
+            setPhase('failed');
+            setError(data.errorMessage ?? 'Pemrosesan gambar gagal.');
+            return;
+          }
+
+          setPhase(data.status); // queued | processing
+          // Exponential backoff: 1s, 2s, 4s, 8s… capped at 8s
+          const delay = Math.min(1000 * 2 ** current, 8000);
+          await new Promise((resolve) => {
+            timerRef.current = setTimeout(resolve, delay);
+          });
+          current += 1;
+        } catch (err) {
+          if (cancelledRef.current || controller.signal.aborted) return;
+          // Network hiccup: retry a few times before giving up
+          if (current < 5) {
+            const delay = Math.min(1000 * 2 ** current, 8000);
+            await new Promise((resolve) => {
+              timerRef.current = setTimeout(resolve, delay);
+            });
+            current += 1;
+            continue;
+          }
           setPhase('failed');
-          setError(data.errorMessage ?? 'Pemrosesan gambar gagal.');
+          setError(
+            err instanceof Error && err.message === 'Image not found'
+              ? 'Gambar tidak ditemukan.'
+              : 'Gagal memeriksa status pemrosesan.',
+          );
           return;
         }
-
-        setPhase(data.status); // queued | processing
-        // Exponential backoff: 1s, 2s, 4s, 8s… capped at 8s
-        const delay = Math.min(1000 * 2 ** attempt, 8000);
-        timerRef.current = setTimeout(() => pollStatus(id, attempt + 1), delay);
-      } catch (err) {
-        if (cancelledRef.current || controller.signal.aborted) return;
-        // Network hiccup: retry a few times before giving up
-        if (attempt < 5) {
-          const delay = Math.min(1000 * 2 ** attempt, 8000);
-          timerRef.current = setTimeout(() => pollStatus(id, attempt + 1), delay);
-          return;
-        }
-        setPhase('failed');
-        setError(
-          err instanceof Error && err.message === 'Image not found'
-            ? 'Gambar tidak ditemukan.'
-            : 'Gagal memeriksa status pemrosesan.',
-        );
       }
     },
-    [],
+    [router],
   );
 
   const handleUpload = async () => {
