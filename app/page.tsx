@@ -7,6 +7,7 @@ import { EventCountdown } from '@/components/EventCountdown';
 import { ParallaxHero } from '@/components/ParallaxHero';
 import { PinMark25 } from '@/components/PinMark25';
 import { Reveal } from '@/components/Reveal';
+import { Analytics } from "@vercel/analytics/next";
 import {
   Shirt,
   Images,
@@ -14,7 +15,16 @@ import {
   ArrowRight,
   Camera,
   Users,
+  MapPin,
+  ExternalLink,
 } from 'lucide-react';
+
+// Venue — resolved coordinates from the shared Google Maps short link.
+// Embed URL uses the keyless `output=embed` format; the short link is kept
+// for the "open in Maps" CTA so visitors get the full place page + directions.
+const VENUE_MAPS_URL = 'https://maps.app.goo.gl/7oMw7cH97E4Xedbx9';
+const VENUE_MAPS_EMBED_URL =
+  'https://maps.google.com/maps?q=-6.9180666,107.6342639&z=17&hl=id&output=embed';
 
 export const revalidate = 60;
 
@@ -167,8 +177,9 @@ export default async function HomePage() {
                   <ShieldCheck className="w-5 h-5" />
                 </div>
                 <h3 className="font-display text-xl font-bold text-stone-900 dark:text-gray-100 mb-2">
-                  Upload Bukti Bayar
+                  Upload Bukti Bayar 
                 </h3>
+                <h4>Rekening BCA: 7771217234 a/n SITI SAPTINI</h4>
                 <p className="text-stone-600 dark:text-gray-400 text-sm leading-relaxed">
                   Transfer bank, screenshot bukti, upload dari HP. Panitia
                   verifikasi dan konfirmasi — langsung beres.
@@ -193,6 +204,54 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Venue — map + directions, aligned with the hero's 3/2 grid */}
+      <Reveal className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-900 border-t border-stone-200 dark:border-gray-800">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid lg:grid-cols-5 gap-10 lg:gap-12 items-stretch">
+            {/* Info panel */}
+            <div className="lg:col-span-2 flex flex-col justify-center space-y-5">
+              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">
+                <MapPin className="w-4 h-4" />
+                Lokasi Acara
+              </div>
+              <h2 className="font-display text-3xl sm:text-4xl font-bold text-stone-900 dark:text-gray-100 text-balance">
+                Bajawa Flores NTT Laswi
+              </h2>
+              <p className="text-stone-600 dark:text-gray-400 leading-relaxed">
+                Tempat bertemunya kembali angkatan 2001. Lihat peta di samping
+                untuk lokasi, atau langsung navigasi dari HP kamu.
+              </p>
+              <div className="pt-1">
+                <a
+                  href={VENUE_MAPS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary inline-flex items-center gap-2"
+                >
+                  <MapPin className="w-4 h-4" />
+                  Buka di Google Maps
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Map embed — stretches to match the info panel on desktop */}
+            <div className="lg:col-span-3">
+              <div className="card overflow-hidden h-full min-h-[320px]">
+                <iframe
+                  src={VENUE_MAPS_EMBED_URL}
+                  title="Peta lokasi acara reuni di Google Maps"
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  className="w-full h-full min-h-[320px] sm:min-h-[400px] lg:min-h-0 border-0"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </Reveal>
+
       {/* Footer CTA — simple, not salesy */}
       <Reveal className="py-16 px-4 sm:px-6 lg:px-8 bg-teal-50/40 dark:bg-gray-900 border-t border-stone-200 dark:border-gray-800 text-center">
         <div className="max-w-xl mx-auto space-y-4">
@@ -214,6 +273,7 @@ export default async function HomePage() {
           </div>
         </div>
       </Reveal>
+      <Analytics />
     </div>
   );
 }
