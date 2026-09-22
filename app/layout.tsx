@@ -21,6 +21,24 @@ const display = Space_Grotesk({
 export const metadata: Metadata = {
   title: 'Reuni 25 Tahun | SMA Negeri 14 Bandung',
   description: 'Portal resmi perayaan reuni 25 tahun SMA Negeri 14 Bandung. Daftar, pilih ukuran jersey, dan bagikan foto kenangan bersama alumni.',
+  // Canonical origin for resolving relative OG/twitter image URLs.
+  // NEXTAUTH_URL is the canonical deployment URL and is always configured.
+  metadataBase: new URL(process.env.NEXTAUTH_URL ?? 'https://bring-n-co.vercel.app'),
+  openGraph: {
+    type: 'website',
+    locale: 'id_ID',
+    siteName: 'Reuni 25 Tahun SMAN 14 Bandung',
+    title: 'Reuni 25 Tahun | SMA Negeri 14 Bandung',
+    description:
+      'Portal resmi perayaan reuni 25 tahun SMA Negeri 14 Bandung. Daftar, pilih ukuran jersey, dan bagikan foto kenangan bersama alumni.',
+    url: '/',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Reuni 25 Tahun | SMA Negeri 14 Bandung',
+    description:
+      'Portal resmi perayaan reuni 25 tahun SMA Negeri 14 Bandung. Daftar, pilih ukuran jersey, dan bagikan foto kenangan bersama alumni.',
+  },
   icons: {
     icon: [
       { url: '/favicon/favicon.ico', sizes: '48x48' },
