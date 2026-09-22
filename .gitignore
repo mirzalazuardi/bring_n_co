@@ -45,5 +45,8 @@ graphify-out/
 .omo/
 .playwright-mcp/
 
+# local-only symlinks (break stat()/clone on Vercel & other machines)
+ai-agent_docs
+
 # local env typo variant (contains real secrets)
 .env_local
