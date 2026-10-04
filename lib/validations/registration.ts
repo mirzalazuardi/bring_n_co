@@ -66,3 +66,35 @@ export function toPrismaClassGroup(cg: (typeof CLASS_GROUPS)[number]) {
 export function fromPrismaClassGroup(cg: string): (typeof CLASS_GROUPS)[number] {
   return cg.replace('_', '-') as (typeof CLASS_GROUPS)[number];
 }
+
+// Convert jersey size string to Prisma Enum member (S..XL pass through; 2XL -> Two_XL)
+export function toPrismaJerseySize(size: (typeof JERSEY_SIZES)[number]) {
+  switch (size) {
+    case '2XL':
+      return 'Two_XL' as const;
+    case '3XL':
+      return 'Three_XL' as const;
+    case '4XL':
+      return 'Four_XL' as const;
+    case '5XL':
+      return 'Five_XL' as const;
+    default:
+      return size;
+  }
+}
+
+// Convert Prisma Enum member back to display size (Two_XL -> 2XL)
+export function fromPrismaJerseySize(size: string): (typeof JERSEY_SIZES)[number] {
+  switch (size) {
+    case 'Two_XL':
+      return '2XL';
+    case 'Three_XL':
+      return '3XL';
+    case 'Four_XL':
+      return '4XL';
+    case 'Five_XL':
+      return '5XL';
+    default:
+      return size as (typeof JERSEY_SIZES)[number];
+  }
+}

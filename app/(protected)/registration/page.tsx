@@ -2,7 +2,7 @@ import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { fromPrismaClassGroup } from '@/lib/validations/registration';
+import { fromPrismaClassGroup, fromPrismaJerseySize } from '@/lib/validations/registration';
 import { RegistrationForm } from '@/components/RegistrationForm';
 import { UserCheck } from 'lucide-react';
 
@@ -26,7 +26,7 @@ export default async function RegistrationPage() {
   const formattedData = registration
     ? {
         id: registration.id,
-        jerseySize: registration.jerseySize,
+        jerseySize: fromPrismaJerseySize(registration.jerseySize),
         classGroup: fromPrismaClassGroup(registration.classGroup),
         phone: registration.phone,
         bankTransferProofUrl: registration.bankTransferProofUrl,

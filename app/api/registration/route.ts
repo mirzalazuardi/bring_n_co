@@ -8,6 +8,8 @@ import {
   validateProofFile,
   toPrismaClassGroup,
   fromPrismaClassGroup,
+  toPrismaJerseySize,
+  fromPrismaJerseySize,
   type CLASS_GROUPS,
   type JERSEY_SIZES,
 } from '@/lib/validations/registration';
@@ -40,7 +42,7 @@ export async function GET() {
       registered: true,
       data: {
         id: registration.id,
-        jerseySize: registration.jerseySize,
+        jerseySize: fromPrismaJerseySize(registration.jerseySize),
         classGroup: fromPrismaClassGroup(registration.classGroup),
         phone: registration.phone,
         bankTransferProofUrl: registration.bankTransferProofUrl,
@@ -138,13 +140,13 @@ export async function POST(request: Request) {
       where: { userId },
       create: {
         userId,
-        jerseySize: parsedFields.data.jerseySize as (typeof JERSEY_SIZES)[number],
+        jerseySize: toPrismaJerseySize(parsedFields.data.jerseySize),
         classGroup: prismaClassGroup,
         phone: parsedFields.data.phone,
         bankTransferProofUrl: proofUrl,
       },
       update: {
-        jerseySize: parsedFields.data.jerseySize as (typeof JERSEY_SIZES)[number],
+        jerseySize: toPrismaJerseySize(parsedFields.data.jerseySize),
         classGroup: prismaClassGroup,
         phone: parsedFields.data.phone,
         bankTransferProofUrl: proofUrl,
@@ -156,7 +158,7 @@ export async function POST(request: Request) {
       message: 'Registration saved successfully',
       data: {
         id: registration.id,
-        jerseySize: registration.jerseySize,
+        jerseySize: fromPrismaJerseySize(registration.jerseySize),
         classGroup: fromPrismaClassGroup(registration.classGroup),
         phone: registration.phone,
         bankTransferProofUrl: registration.bankTransferProofUrl,
