@@ -12,6 +12,10 @@ enum JerseySize {
   M
   L
   XL
+  Two_XL @map("2XL")
+  Three_XL @map("3XL")
+  Four_XL @map("4XL")
+  Five_XL @map("5XL")
 }
 
 enum ClassGroup {

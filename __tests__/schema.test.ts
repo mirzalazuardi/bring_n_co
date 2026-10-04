@@ -8,6 +8,11 @@ describe('Prisma Schema and Client', () => {
     expect(JerseySize.M).toBe('M');
     expect(JerseySize.L).toBe('L');
     expect(JerseySize.XL).toBe('XL');
+    // Extended sizes: TS client exposes Prisma member names; @map stores 2XL-5XL in the DB.
+    expect(JerseySize.Two_XL).toBe('Two_XL');
+    expect(JerseySize.Three_XL).toBe('Three_XL');
+    expect(JerseySize.Four_XL).toBe('Four_XL');
+    expect(JerseySize.Five_XL).toBe('Five_XL');
 
     expect(ClassGroup.IPA_1).toBe('IPA_1');
     expect(ClassGroup.IPS_4).toBe('IPS_4');
