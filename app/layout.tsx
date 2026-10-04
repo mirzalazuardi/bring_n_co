@@ -4,6 +4,7 @@ import './globals.css';
 import { SessionProvider } from '@/components/SessionProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { StripBrowserExtensions } from '@/components/StripBrowserExtensions';
+import { BackgroundMusic } from '@/components/BackgroundMusic';
 import { Navbar } from '@/components/Navbar';
 import { isUploadOpen } from '@/lib/upload-window';
 
@@ -70,6 +71,7 @@ export default function RootLayout({
       </head>
       <body className="bg-stone-50 dark:bg-gray-900 text-stone-900 dark:text-gray-100 min-h-screen flex flex-col selection:bg-teal-200 dark:selection:bg-teal-800 selection:text-teal-900 dark:selection:text-teal-100" suppressHydrationWarning>
         <StripBrowserExtensions />
+        <BackgroundMusic />
         <ThemeProvider>
           <SessionProvider>
             <Navbar uploadOpen={uploadOpen} />
