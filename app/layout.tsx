@@ -65,7 +65,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{(function(){function s(e){e.removeAttribute('bis_skin_checked');e.removeAttribute('bis_register')}document.querySelectorAll('[bis_skin_checked],[bis_register]').forEach(s);new MutationObserver(function(m){for(var i=0;i<m.length;i++){if(m[i].target.nodeType===1)s(m[i].target)}}).observe(document.documentElement,{childList:true,subtree:true,attributes:true})})()}catch(x){}`,
+            __html: `try{(function(){function s(e){e.removeAttribute('bis_skin_checked');e.removeAttribute('bis_register');e.removeAttribute('data-darkreader-inline-stroke');e.removeAttribute('data-darkreader-inline-color');e.removeAttribute('data-darkreader-inline-fill');e.removeAttribute('data-darkreader-inline-bgcolor');e.removeAttribute('data-darkreader-inline-border');e.removeAttribute('data-darkreader-inline-boxshadow');e.removeAttribute('data-darkreader-inline-invert');if(e.style){e.style.removeProperty('--darkreader-inline-stroke');e.style.removeProperty('--darkreader-inline-color');e.style.removeProperty('--darkreader-inline-fill');e.style.removeProperty('--darkreader-inline-bgcolor');e.style.removeProperty('--darkreader-inline-border');e.style.removeProperty('--darkreader-inline-boxshadow');e.style.removeProperty('--darkreader-inline-invert')}}document.querySelectorAll('[bis_skin_checked],[bis_register],[data-darkreader-inline-stroke],[data-darkreader-inline-color],[data-darkreader-inline-fill],[data-darkreader-inline-bgcolor],[data-darkreader-inline-border],[data-darkreader-inline-boxshadow],[data-darkreader-inline-invert]').forEach(s);new MutationObserver(function(m){for(var i=0;i<m.length;i++){if(m[i].target.nodeType===1)s(m[i].target)}}).observe(document.documentElement,{childList:true,subtree:true,attributes:true})})()}catch(x){}`,
           }}
         />
       </head>
@@ -80,6 +80,9 @@ export default function RootLayout({
               <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
                 <p className="font-medium text-stone-700 dark:text-gray-300">Reuni 25 Tahun SMA Negeri 14 Bandung</p>
                 <p className="mt-1 text-xs text-stone-400 dark:text-gray-500">Kelas IPA-1 s.d. IPA-3 & IPS-1 s.d. IPS-4 &bull; Angkatan 2001</p>
+                <br />
+                <p>orchestrated and designed by : <a href="https://www.instagram.com/luckymeerz">Icha</a> and <a href="https://www.instagram.com/siamperdana/">Siam</a> </p>
+                  <p>backsound by <a href="https://www.youtube.com/channel/UCDlCTYDSxnZFN_JyrkBBC-A">Yura Yunita</a></p>
               </div>
             </footer>
           </SessionProvider>
