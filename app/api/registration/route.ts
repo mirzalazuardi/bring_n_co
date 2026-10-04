@@ -11,7 +11,6 @@ import {
   toPrismaJerseySize,
   fromPrismaJerseySize,
   type CLASS_GROUPS,
-  type JERSEY_SIZES,
 } from '@/lib/validations/registration';
 
 export async function GET() {
