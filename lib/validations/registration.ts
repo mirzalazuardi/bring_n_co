@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const JERSEY_SIZES = ['S', 'M', 'L', 'XL'] as const;
+export const JERSEY_SIZES = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'] as const;
 export const CLASS_GROUPS = [
   'IPA-1',
   'IPA-2',
@@ -21,8 +21,9 @@ export const ALLOWED_PROOF_MIME_TYPES = [
 export const MAX_FILE_SIZE_BYTES = 4 * 1024 * 1024; // 4.0 MB
 
 export const registrationFormSchema = z.object({
-  jerseySize: z.enum(JERSEY_SIZES, {
-    errorMap: () => ({ message: 'Please select a valid jersey size (S, M, L, XL)' }),
+  jerseySize: z.enum(JERSEY_SIZES, {      errorMap: () => ({
+        message: 'Please select a valid jersey size (S, M, L, XL, 2XL, 3XL, 4XL, 5XL)',
+      }),
   }),
   classGroup: z.enum(CLASS_GROUPS, {
     errorMap: () => ({ message: 'Please select a valid class group' }),

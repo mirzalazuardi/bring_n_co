@@ -186,11 +186,11 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
         >
           Lihat Panduan Ukuran
         </a>
-        <div className="grid grid-cols-4 gap-3 mt-3">
+        <div className="grid grid-cols-4 gap-3 sm:grid-cols-8 mt-3">
           {JERSEY_SIZES.map((size) => (
             <label
               key={size}
-              className={`flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all ${
+              className={`flex items-center justify-center p-3 rounded-xl border cursor-pointer transition-all ${
                 jerseySize === size
                   ? 'border-teal-300 dark:border-teal-600 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 shadow-sm'
                   : 'border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500'
@@ -205,12 +205,6 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
                 className="sr-only"
               />
               <span className="text-lg font-bold">{size}</span>
-              <span className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">
-                {size === 'S' && 'Dada 96cm'}
-                {size === 'M' && 'Dada 102cm'}
-                {size === 'L' && 'Dada 108cm'}
-                {size === 'XL' && 'Dada 114cm'}
-              </span>
             </label>
           ))}
         </div>
