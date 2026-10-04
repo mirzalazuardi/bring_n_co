@@ -81,8 +81,9 @@ export default function RootLayout({
                 <p className="font-medium text-stone-700 dark:text-gray-300">Reuni 25 Tahun SMA Negeri 14 Bandung</p>
                 <p className="mt-1 text-xs text-stone-400 dark:text-gray-500">Kelas IPA-1 s.d. IPA-3 & IPS-1 s.d. IPS-4 &bull; Angkatan 2001</p>
                 <br />
-                <p>orchestrated and designed by : <a href="https://www.instagram.com/luckymeerz">Icha</a> and <a href="https://www.instagram.com/siamperdana/">Siam</a> </p>
-                  <p>backsound by <a href="https://www.youtube.com/channel/UCDlCTYDSxnZFN_JyrkBBC-A">Yura Yunita</a></p>
+                <p>orchestrated and developed by <a href="https://www.instagram.com/luckymeerz">Icha</a></p>
+                <p>designed by <a href="https://www.instagram.com/siamperdana/">Siam</a> </p>
+                <p>backsound by <a href="https://www.youtube.com/channel/UCDlCTYDSxnZFN_JyrkBBC-A">Yura Yunita</a></p>
               </div>
             </footer>
           </SessionProvider>
