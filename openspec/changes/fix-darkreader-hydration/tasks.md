@@ -39,8 +39,16 @@
   - Expected: no hydration-mismatch error attributable to Dark Reader attributes; app behavior unchanged for non-extension visitors *(verified: lint 0 errors, build exit 0, 109/109 tests; console-clean reload with Dark Reader enabled is the user's browser check)*
   - Commit: `fix(hydration): strip darkreader inline attrs pre-hydration`
 
+- [ ] [LOW] Suppress hydration warning on the one remaining flagged node
+  - File: `components/PinMark25.tsx`
+  - Change: add `suppressHydrationWarning` to the decorative `next/image` (`/25.svg`) inside the pin badge, with a comment explaining why
+  - Context: after the T1 cleaner, the only remaining mismatch is this single `aria-hidden` image whose inline `style={{color:transparent}}` (added by React for next/image) still races the extension's style observer mid-hydration — the console diff shows two identical `style={{color:"transparent"}}` lines, the signature of a DOM style mutation during React's hydration walk. The node has constant props and no user-visible state, so suppressing warnings on it alone hides nothing real; every other element keeps full hydration checking (same pattern as `suppressHydrationWarning` on `<html>`/`<body>` for the theme provider).
+  - Verify: `npm run lint && npm run build`, then manual: with Dark Reader enabled, reload — homepage console clean
+  - Expected: no hydration error on the homepage; PinMark25 renders identically
+  - Commit: `fix(hydration): suppress warning on pin badge image racing extension`
+
 ## Verification
 
 - [x] [LOW] Full suite: `npm run lint && npm run build && npm test`
-  - Expected: 109/109 tests green; build compiles *(verified)*
-- [x] [LOW] Manual smoke with Dark Reader enabled: reload homepage, console shows no hydration error; theme toggle still works; icons render correctly in light and dark modes *(pending user check in browser with the extension enabled)*
+  - Expected: 109/109 tests green; build compiles *(verified for T1; re-run after T2)*
+- [x] [LOW] Manual smoke with Dark Reader enabled: reload homepage, console shows no hydration error; theme toggle still works; icons render correctly in light and dark modes *(T1 verified by user; T2 homepage re-check pending user confirmation)*

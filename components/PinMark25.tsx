@@ -22,10 +22,14 @@ export function PinMark25({ className = '' }: PinMark25Props) {
       aria-label="Pin Reuni 25 Tahun SMA Negeri 14 Bandung"
       className={`relative aspect-square overflow-hidden rounded-[24%] bg-gradient-to-br from-silver-100 via-silver-300 to-silver-400 dark:from-silver-500 dark:via-silver-600 dark:to-silver-700 shadow-sm ${className}`.trim()}
     >
+      {/* Dark Reader races this node's inline style during hydration; the
+          warning-suppression is scoped to this decorative, aria-hidden image
+          with constant props — the rest of the tree keeps full checking. */}
       <Image
         src="/25.svg"
         alt=""
         aria-hidden="true"
+        suppressHydrationWarning
         width={434}
         height={438}
         sizes="(min-width: 640px) 112px, 96px"
