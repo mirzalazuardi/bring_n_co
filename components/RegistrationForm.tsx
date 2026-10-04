@@ -178,7 +178,15 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
           Ukuran Jersey <span className="text-red-500">*</span>
         </label>
-        <div className="grid grid-cols-4 gap-3">
+        <a
+          href="https://res.cloudinary.com/dhcmpwmu1/image/upload/v1791129511/images/805a2e3c-030b-4b47-957f-7d5e47f22f2b/original.jpg"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-teal-600 dark:text-teal-400 underline hover:text-teal-700 dark:hover:text-teal-300"
+        >
+          Lihat Panduan Ukuran
+        </a>
+        <div className="grid grid-cols-4 gap-3 mt-3">
           {JERSEY_SIZES.map((size) => (
             <label
               key={size}
