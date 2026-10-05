@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 import { fromPrismaClassGroup, fromPrismaJerseySize } from '@/lib/validations/registration';
 import { RegistrationForm } from '@/components/RegistrationForm';
 import { CopyButton } from '@/components/CopyButton';
+import { Clock, ShieldCheck, XCircle, ExternalLink } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Pendaftaran Reuni | SMA Negeri 14 Bandung',
@@ -92,9 +93,82 @@ export default async function RegistrationPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 sm:p-8 shadow-sm">
-          <RegistrationForm initialData={formattedData} initialName={session.user.name} />
-        </div>
+        {formattedData && formattedData.status !== 'REJECTED' ? (
+          /* Locked — pending or approved */
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 sm:p-8 shadow-sm space-y-4">
+            {formattedData.status === 'APPROVED' ? (
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                <ShieldCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">Pembayaran Terverifikasi</p>
+                  <p className="text-xs text-emerald-600 dark:text-emerald-500">Pendaftaran kamu sudah dikonfirmasi. Sampai jumpa di reuni!</p>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                <Clock className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">Menunggu Verifikasi</p>
+                  <p className="text-xs text-amber-600 dark:text-amber-500">Harap bersabar, sedang diverifikasi secara manual.</p>
+                </div>
+              </div>
+            )}
+
+            <div className="divide-y divide-gray-100 dark:divide-gray-700 text-sm">
+              <div className="flex justify-between py-2.5">
+                <span className="text-gray-500 dark:text-gray-400">Nama</span>
+                <span className="font-medium text-gray-800 dark:text-gray-100">{session.user.name || '—'}</span>
+              </div>
+              <div className="flex justify-between py-2.5">
+                <span className="text-gray-500 dark:text-gray-400">Kelas</span>
+                <span className="font-medium text-gray-800 dark:text-gray-100">{formattedData.classGroup}</span>
+              </div>
+              <div className="flex justify-between py-2.5">
+                <span className="text-gray-500 dark:text-gray-400">Ukuran Jersey</span>
+                <span className="font-medium text-gray-800 dark:text-gray-100">{formattedData.jerseySize}</span>
+              </div>
+              <div className="flex justify-between py-2.5">
+                <span className="text-gray-500 dark:text-gray-400">WhatsApp</span>
+                <span className="font-medium text-gray-800 dark:text-gray-100">{formattedData.phone}</span>
+              </div>
+              {formattedData.bankTransferProofUrl && (
+                <div className="flex justify-between py-2.5">
+                  <span className="text-gray-500 dark:text-gray-400">Bukti Transfer</span>
+                  <a
+                    href={formattedData.bankTransferProofUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-teal-600 dark:text-teal-400 hover:underline font-medium"
+                  >
+                    Lihat <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {formattedData.notes && (
+              <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-700/50 rounded-lg px-3 py-2">
+                Catatan panitia: {formattedData.notes}
+              </p>
+            )}
+          </div>
+        ) : (
+          /* Editable — new or rejected */
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 sm:p-8 shadow-sm">
+            {formattedData?.status === 'REJECTED' && (
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 mb-6">
+                <XCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-red-700 dark:text-red-400">Bukti Ditolak</p>
+                  <p className="text-xs text-red-600 dark:text-red-500">
+                    {formattedData.notes ?? 'Silakan unggah ulang bukti transfer yang valid.'}
+                  </p>
+                </div>
+              </div>
+            )}
+            <RegistrationForm initialData={formattedData} initialName={session.user.name} />
+          </div>
+        )}
       </div>
     </div>
   );
