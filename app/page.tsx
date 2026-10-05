@@ -6,6 +6,7 @@ import { EventCountdown } from '@/components/EventCountdown';
 import { ParallaxHero } from '@/components/ParallaxHero';
 import { PinMark25 } from '@/components/PinMark25';
 import { Reveal } from '@/components/Reveal';
+import { CopyButton } from '@/components/CopyButton';
 import { Analytics } from "@vercel/analytics/next";
 import {
   Shirt,
@@ -77,22 +78,13 @@ export default async function HomePage() {
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start gap-4">
-                  {userRegistration ? (
+                  {userRegistration && (
                     <Link
                       href="/registration"
                       className="btn-primary flex items-center gap-2"
                     >
                       <ShieldCheck className="w-4 h-4" />
                       Status: {userRegistration.status}
-                    </Link>
-                  ) : (
-                    <Link
-                      href={session ? '/registration' : '/login'}
-                      className="btn-primary flex items-center gap-2 text-base"
-                    >
-                      <Shirt className="w-5 h-5" />
-                      Daftar Sekarang
-                      <ArrowRight className="w-4 h-4" />
                     </Link>
                   )}
 
@@ -175,20 +167,27 @@ export default async function HomePage() {
                 <div className="w-10 h-10 rounded-lg bg-pink-100 dark:bg-pink-900/40 flex items-center justify-center text-pink-600 dark:text-pink-400 mb-4">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                <h3 className="font-display text-xl font-bold text-stone-900 dark:text-gray-100 mb-1">
+                <h3 className="font-display text-xl font-bold text-stone-900 dark:text-gray-100 mb-2">
                   Upload Bukti Bayar
                 </h3>
-                <p className="text-xs text-stone-500 dark:text-gray-400 mb-2">
-                  Rekening BCA: 7771217234 a/n SITI SAPTINI
-                </p>
-                <div className="text-sm text-stone-700 dark:text-gray-300 space-y-0.5 mb-3">
-                  <div className="flex justify-between">
-                    <span className="text-stone-500 dark:text-gray-400">5–19 Okt 2026</span>
-                    <span className="font-semibold">Rp 150.000</span>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs text-stone-500 dark:text-gray-400">
+                    BCA 7771217234 a/n SITI SAPTINI
+                  </p>
+                  <CopyButton text="7771217234" />
+                </div>
+                <div className="space-y-1.5 mb-3">
+                  {/* Early bird */}
+                  <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-amber-400 to-orange-400 dark:from-amber-500 dark:to-orange-500 px-3 py-2">
+                    <div>
+                      <span className="block text-[10px] font-bold text-white/80 uppercase tracking-wide">Early Bird</span>
+                      <span className="text-xs font-semibold text-white">5 – 18 Okt 2026</span>
+                    </div>
+                    <span className="text-sm font-extrabold text-white">Rp 150.000</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-stone-500 dark:text-gray-400">20–31 Okt 2026</span>
-                    <span className="font-semibold">Rp 175.000</span>
+                  <div className="flex justify-between text-xs px-1">
+                    <span className="text-stone-500 dark:text-gray-400">19 – 31 Okt 2026</span>
+                    <span className="font-semibold text-stone-700 dark:text-gray-300">Rp 175.000</span>
                   </div>
                 </div>
                 <p className="text-xs text-stone-500 dark:text-gray-400 mb-1">Sudah termasuk:</p>

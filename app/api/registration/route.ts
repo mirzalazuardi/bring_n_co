@@ -73,6 +73,7 @@ export async function POST(request: Request) {
     const userId = (session.user as { id: string }).id;
     const formData = await request.formData();
 
+    const name = formData.get('name') as string | null;
     const jerseySize = formData.get('jerseySize') as string;
     const classGroup = formData.get('classGroup') as string;
     const phone = formData.get('phone') as string;
@@ -135,22 +136,25 @@ export async function POST(request: Request) {
       parsedFields.data.classGroup as (typeof CLASS_GROUPS)[number]
     );
 
-    const registration = await prisma.registration.upsert({
-      where: { userId },
-      create: {
-        userId,
-        jerseySize: toPrismaJerseySize(parsedFields.data.jerseySize),
-        classGroup: prismaClassGroup,
-        phone: parsedFields.data.phone,
-        bankTransferProofUrl: proofUrl,
-      },
-      update: {
-        jerseySize: toPrismaJerseySize(parsedFields.data.jerseySize),
-        classGroup: prismaClassGroup,
-        phone: parsedFields.data.phone,
-        bankTransferProofUrl: proofUrl,
-      },
-    });
+    const [registration] = await Promise.all([
+      prisma.registration.upsert({
+        where: { userId },
+        create: {
+          userId,
+          jerseySize: toPrismaJerseySize(parsedFields.data.jerseySize),
+          classGroup: prismaClassGroup,
+          phone: parsedFields.data.phone,
+          bankTransferProofUrl: proofUrl,
+        },
+        update: {
+          jerseySize: toPrismaJerseySize(parsedFields.data.jerseySize),
+          classGroup: prismaClassGroup,
+          phone: parsedFields.data.phone,
+          bankTransferProofUrl: proofUrl,
+        },
+      }),
+      name ? prisma.user.update({ where: { id: userId }, data: { name } }) : Promise.resolve(null),
+    ]);
 
     return NextResponse.json({
       success: true,

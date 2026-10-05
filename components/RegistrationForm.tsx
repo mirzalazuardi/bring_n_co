@@ -30,12 +30,14 @@ interface ExistingRegistration {
 
 interface RegistrationFormProps {
   initialData?: ExistingRegistration | null;
+  initialName?: string | null;
 }
 
-export function RegistrationForm({ initialData }: RegistrationFormProps) {
+export function RegistrationForm({ initialData, initialName }: RegistrationFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [name, setName] = useState(initialName || '');
   const [jerseySize, setJerseySize] = useState<(typeof JERSEY_SIZES)[number]>(
     initialData?.jerseySize || 'L'
   );
@@ -90,6 +92,7 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
 
     try {
       const formData = new FormData();
+      formData.append('name', name);
       formData.append('jerseySize', jerseySize);
       formData.append('classGroup', classGroup);
       formData.append('phone', phone);
@@ -173,6 +176,20 @@ export function RegistrationForm({ initialData }: RegistrationFormProps) {
           <span>{success}</span>
         </div>
       )}
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          Nama Lengkap <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          required
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Nama sesuai identitas"
+          className="w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+        />
+      </div>
 
       <div>
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
