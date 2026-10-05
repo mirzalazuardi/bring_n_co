@@ -1,4 +1,3 @@
-import React from 'react';
 import Link from 'next/link';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -176,10 +175,29 @@ export default async function HomePage() {
                 <div className="w-10 h-10 rounded-lg bg-pink-100 dark:bg-pink-900/40 flex items-center justify-center text-pink-600 dark:text-pink-400 mb-4">
                   <ShieldCheck className="w-5 h-5" />
                 </div>
-                <h3 className="font-display text-xl font-bold text-stone-900 dark:text-gray-100 mb-2">
-                  Upload Bukti Bayar 
+                <h3 className="font-display text-xl font-bold text-stone-900 dark:text-gray-100 mb-1">
+                  Upload Bukti Bayar
                 </h3>
-                <h4>Rekening BCA: 7771217234 a/n SITI SAPTINI</h4>
+                <p className="text-xs text-stone-500 dark:text-gray-400 mb-2">
+                  Rekening BCA: 7771217234 a/n SITI SAPTINI
+                </p>
+                <div className="text-sm text-stone-700 dark:text-gray-300 space-y-0.5 mb-3">
+                  <div className="flex justify-between">
+                    <span className="text-stone-500 dark:text-gray-400">5–19 Okt 2026</span>
+                    <span className="font-semibold">Rp 150.000</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-stone-500 dark:text-gray-400">20–31 Okt 2026</span>
+                    <span className="font-semibold">Rp 175.000</span>
+                  </div>
+                </div>
+                <p className="text-xs text-stone-500 dark:text-gray-400 mb-1">Sudah termasuk:</p>
+                <ul className="text-xs text-stone-600 dark:text-gray-400 list-disc list-inside space-y-0.5 mb-3">
+                  <li>Jersey Exclusive 25thn</li>
+                  <li>Lanyard + ID Card</li>
+                  <li>Merchandise</li>
+                  <li>Makan Siang</li>
+                </ul>
                 <p className="text-stone-600 dark:text-gray-400 text-sm leading-relaxed">
                   Transfer bank, screenshot bukti, upload dari HP. Panitia
                   verifikasi dan konfirmasi — langsung beres.
