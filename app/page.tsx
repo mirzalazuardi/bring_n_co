@@ -209,7 +209,7 @@ export default async function HomePage() {
                   <Camera className="w-5 h-5" />
                 </div>
                 <h3 className="font-display text-xl font-bold text-stone-900 dark:text-gray-100 mb-2">
-                  Galeri Foto Kenangan
+                  Galeri
                 </h3>
                 <p className="text-stone-600 dark:text-gray-400 text-sm leading-relaxed">
                   Foto masa SMA, foto terkini — slideshow live yang terus
