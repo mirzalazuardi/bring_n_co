@@ -33,6 +33,13 @@
   - Expected: tests green (or smoke-equivalent if node-only), `/audio/yura_bandung.mp3` returns 200 audio/mpeg, homepage HTML includes the audio element and toggle
   - Commit: `test(music): cover autoplay fallback and mute toggle`
 
+- [x] [LOW] Amendment (2026-10-05): swap track to `yura_bandung_ori.mp3` and harden autoplay
+  - Files: `components/BackgroundMusic.tsx`, `public/audio/yura_bandung_ori.mp3` (new asset, 5.8 MB), `public/audio/yura_bandung.mp3` (removed), `specs/background-music.md`, `proposal.md`
+  - Change: repoint `TRACK_SRC` to `/audio/yura_bandung_ori.mp3`; when the audible autoplay attempt rejects, fall back to muted playback so the track is live from page load (on browsers that permit it), then unmute on the visitor's first pointer/keyboard interaction; stale autoplay rejections must not mute gesture-started playback; gesture events targeting the toggle button are ignored (the button keeps its own pause/resume meaning) and page gestures never restart music the visitor explicitly paused via the toggle
+  - Verify: `npm run lint && npx vitest run && npm run build && npm run start` + curl checks + real-browser check (headful Chrome via puppeteer-core, installed with `--no-save` and removed after)
+  - Expected: lint 0 errors, tests green, `/audio/yura_bandung_ori.mp3` returns 200 audio/mpeg, homepage HTML contains the new `<audio>` src, old asset 404s *(all verified)*; real-browser: on load Chrome (build 140, fresh profile, localhost) rejects both unmuted and muted `play()` with NotAllowedError — load-time sound is browser-blocked, and the muted-start path degrades cleanly to gesture-start; after the first click anywhere the music is audible (media clock advances 1:1), the toggle pauses/resumes, and the user confirmed sound; decision (2026-10-05): keep gesture-start behavior, no welcome overlay
+  - Commit: `feat(music): swap track to yura_bandung_ori and muted-start autoplay fallback`
+
 ## Verification
 
 - [x] [MID] Full suite: `npm run lint && npm run build && npm test`

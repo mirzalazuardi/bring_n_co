@@ -10,21 +10,27 @@ Gives the reunion portal a continuous, celebratory soundtrack ("Yura Bandung") t
 
 ### REQ-MUSIC-001: Site-wide looping track with autoplay attempt
 
-Every page MUST include a single looping `<audio>` element pointing at `/audio/yura_bandung.mp3` with `preload="none"`. The component MUST attempt autoplay on mount and MUST start playback on the visitor's first pointer or keyboard interaction if the browser blocked the autoplay attempt.
+Every page MUST include a single looping `<audio>` element pointing at `/audio/yura_bandung_ori.mp3` with `preload="none"`. The component MUST attempt audible autoplay on mount; if the browser blocks it, it MUST fall back to muted playback (permitted on most browsers — some builds reject even muted autoplay, in which case playback starts on the first interaction) and MUST unmute on the visitor's first pointer or keyboard interaction. Page gestures MUST NOT restart the music after the visitor paused it via the toggle.
 
 #### Scenario: Autoplay permitted by browser
 
 - **Given** a visitor opens any page of the portal
 - **When** the browser's autoplay policy permits playback without a gesture
-- **Then** the track starts playing automatically and loops continuously
+- **Then** the track starts playing automatically (audible) and loops continuously
 
-#### Scenario: Autoplay blocked until first interaction
+#### Scenario: Autoplay blocked — muted start, unmuted on first interaction
 
-- **Given** a visitor opens any page in a browser that blocks autoplay without a gesture
+- **Given** a visitor opens any page in a browser that blocks audible autoplay without a gesture
 - **When** they have not interacted with the page yet
-- **Then** no audio plays and no error surfaces in the console
-- **When** they click or press any key anywhere on the page
-- **Then** the track starts playing and loops continuously
+- **Then** the track is playing muted (no audible sound, no console errors) and the toggle shows the muted state
+- **When** they click or press any key anywhere on the page (other than the toggle button)
+- **Then** the track unmutes instantly and continues looping audibly
+
+#### Scenario: Explicit mute is respected
+
+- **Given** the visitor paused or muted the track via the floating toggle
+- **When** they interact with the page afterwards
+- **Then** the music stays off until they reactivate the toggle
 
 ---
 

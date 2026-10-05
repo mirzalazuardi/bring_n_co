@@ -6,14 +6,15 @@ The reunion portal is a nostalgic, celebratory space for alumni. The committee w
 
 ## What Changes
 
-- A looping background track (`yura_bandung.mp3`, served from `/audio/yura_bandung.mp3`) plays across the whole site, mounted once in the root layout so it continues uninterrupted during client-side navigation.
-- Autoplay is attempted on load; when the browser blocks it (no user gesture yet), playback starts on the visitor's first pointer/keyboard interaction with the page.
+- A looping background track (`yura_bandung_ori.mp3`, served from `/audio/yura_bandung_ori.mp3`) plays across the whole site, mounted once in the root layout so it continues uninterrupted during client-side navigation.
+- Autoplay is attempted on load; when the browser blocks it (no user gesture yet), playback starts muted (always permitted) and the visitor's first pointer/keyboard interaction unmutes it.
 - A floating mute/unmute button (bottom-right) lets visitors turn the music off or back on at any time, with a subtle animated indicator while playing.
+- **Amendment (2026-10-05):** track swapped to `yura_bandung_ori.mp3` (original `yura_bandung.mp3` asset removed) and autoplay hardened with the muted-start fallback above.
 
 ## Impact
 
 - **Complexity:** MID — new client component with browser autoplay-policy edge cases, cross-file integration into the root layout, plus a 6.1 MB static asset.
-- **Touches:** `components/BackgroundMusic.tsx` (new), `app/layout.tsx`, `public/audio/yura_bandung.mp3` (new asset).
+- **Touches:** `components/BackgroundMusic.tsx` (new), `app/layout.tsx`, `public/audio/yura_bandung_ori.mp3` (asset).
 - **Spec:** adds `openspec/changes/feat-background-music/specs/background-music.md`
 - **Risk:** low — isolated client component; no data, auth, or API surface. Autoplay attempts that fail silently fall back to gesture-start.
 - **Dependencies:** none — uses the native `HTMLAudioElement` and already-installed `lucide-react` icons.
