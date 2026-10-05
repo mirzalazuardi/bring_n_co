@@ -55,9 +55,6 @@ export default async function GalleryPage() {
           <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-gray-100 tracking-tight">
             Galeri
           </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 max-w-xl mx-auto">
-            Tampilan nostalgia kenangan yang dikirimkan oleh alumni dari semua kelas. Auto-advance setiap ~4 detik.
-          </p>
         </div>
 
         <GallerySlideshow images={images} uploadOpen={uploadOpen} uploadOpenAt={uploadOpenAt} />
