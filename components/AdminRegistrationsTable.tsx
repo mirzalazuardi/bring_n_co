@@ -7,11 +7,13 @@ import {
   Download,
   ExternalLink,
   Loader2,
+  Pencil,
   Search,
   Trash2,
   X,
 } from 'lucide-react';
 import type { AdminRegistrationRow, AdminVerificationStatus } from '@/lib/admin/registrations';
+import { CLASS_GROUPS, JERSEY_SIZES } from '@/lib/validations/registration';
 
 interface AdminRegistrationsTableProps {
   initialRows: AdminRegistrationRow[];
@@ -69,6 +71,11 @@ export function AdminRegistrationsTable({ initialRows }: AdminRegistrationsTable
   const [notesFor, setNotesFor] = useState<string | null>(null);
   const [notesDraft, setNotesDraft] = useState('');
   const [deleting, setDeleting] = useState<AdminRegistrationRow | null>(null);
+  // Inline data editor: one row at a time, keyed by registration id.
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editJersey, setEditJersey] = useState<(typeof JERSEY_SIZES)[number]>('L');
+  const [editClass, setEditClass] = useState<(typeof CLASS_GROUPS)[number]>('IPA-1');
+  const [editPhone, setEditPhone] = useState('');
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -127,6 +134,52 @@ export function AdminRegistrationsTable({ initialRows }: AdminRegistrationsTable
       return;
     }
     void patchRow(row, 'REJECTED', notesDraft);
+  };
+
+  const startEdit = (row: AdminRegistrationRow) => {
+    setEditingId(row.id);
+    setEditJersey(row.jerseySize as (typeof JERSEY_SIZES)[number]);
+    setEditClass(row.classGroup as (typeof CLASS_GROUPS)[number]);
+    setEditPhone(row.phone);
+    setError(null);
+  };
+
+  const cancelEdit = () => setEditingId(null);
+
+  /**
+   * Save the inline data editor: single PATCH carrying all three fields so
+   * the row updates atomically. Phone is client-validated with the same
+   * shape as the registration form before anything is sent.
+   */
+  const saveEdit = async (row: AdminRegistrationRow) => {
+    const phone = editPhone.trim();
+    if (!/^\+?[0-9\s-]{10,20}$/.test(phone)) {
+      setError('Nomor HP harus 10–20 digit (boleh diawali +).');
+      return;
+    }
+    setBusyId(row.id);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/registrations/${row.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jerseySize: editJersey, classGroup: editClass, phone }),
+      });
+      const body = (await res.json()) as
+        | { success: true; data: AdminRegistrationRow }
+        | { success: false; error: string };
+
+      if (!res.ok || !body.success) {
+        setError('error' in body ? body.error : 'Gagal menyimpan perubahan.');
+        return;
+      }
+      setRows((prev) => prev.map((r) => (r.id === row.id ? body.data : r)));
+      setEditingId(null);
+    } catch {
+      setError('Gagal menghubungi server. Coba lagi.');
+    } finally {
+      setBusyId(null);
+    }
   };
 
   /** Permanently delete the user account + registration + photos. */
@@ -227,9 +280,56 @@ export function AdminRegistrationsTable({ initialRows }: AdminRegistrationsTable
                     </p>
                   )}
                 </td>
-                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{row.classGroup}</td>
-                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{row.jerseySize}</td>
-                <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{row.phone}</td>
+                <td className="px-4 py-3">
+                  {editingId === row.id ? (
+                    <select
+                      value={editClass}
+                      onChange={(e) => setEditClass(e.target.value as (typeof CLASS_GROUPS)[number])}
+                      disabled={busyId === row.id}
+                      className="w-24 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    >
+                      {CLASS_GROUPS.map((cg) => (
+                        <option key={cg} value={cg}>
+                          {cg}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span className="text-gray-700 dark:text-gray-300">{row.classGroup}</span>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  {editingId === row.id ? (
+                    <select
+                      value={editJersey}
+                      onChange={(e) => setEditJersey(e.target.value as (typeof JERSEY_SIZES)[number])}
+                      disabled={busyId === row.id}
+                      className="w-20 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    >
+                      {JERSEY_SIZES.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span className="text-gray-700 dark:text-gray-300">{row.jerseySize}</span>
+                  )}
+                </td>
+                <td className="px-4 py-3">
+                  {editingId === row.id ? (
+                    <input
+                      type="tel"
+                      value={editPhone}
+                      onChange={(e) => setEditPhone(e.target.value)}
+                      disabled={busyId === row.id}
+                      maxLength={20}
+                      className="w-32 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-2 py-1.5 text-xs text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    />
+                  ) : (
+                    <span className="text-gray-700 dark:text-gray-300">{row.phone}</span>
+                  )}
+                </td>
                 <td className="px-4 py-3">
                   <div className="relative group inline-block">
                     {/* Hover popover — rendered above the link */}
@@ -260,7 +360,25 @@ export function AdminRegistrationsTable({ initialRows }: AdminRegistrationsTable
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  {notesFor === row.id ? (
+                  {editingId === row.id ? (
+                    <div className="flex gap-2 justify-end min-w-56">
+                      <button
+                        onClick={cancelEdit}
+                        disabled={busyId === row.id}
+                        className="px-2.5 py-1 rounded-lg text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                      >
+                        Batal
+                      </button>
+                      <button
+                        onClick={() => void saveEdit(row)}
+                        disabled={busyId === row.id}
+                        className="px-2.5 py-1 rounded-lg text-xs bg-teal-600 text-white disabled:opacity-50 inline-flex items-center gap-1"
+                      >
+                        {busyId === row.id && <Loader2 className="w-3 h-3 animate-spin" />}
+                        Simpan
+                      </button>
+                    </div>
+                  ) : notesFor === row.id ? (
                     <div className="space-y-2 min-w-56">
                       <textarea
                         rows={2}
@@ -289,6 +407,14 @@ export function AdminRegistrationsTable({ initialRows }: AdminRegistrationsTable
                     </div>
                   ) : (
                     <div className="flex gap-1.5 justify-end">
+                      <button
+                        onClick={() => startEdit(row)}
+                        disabled={busyId === row.id}
+                        title="Edit data pendaftaran"
+                        className="p-2 rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 disabled:opacity-40 hover:bg-blue-200 dark:hover:bg-blue-900/60 transition-colors"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
                       <button
                         onClick={() => handleAction(row, 'APPROVED')}
                         disabled={busyId === row.id || row.status === 'APPROVED'}

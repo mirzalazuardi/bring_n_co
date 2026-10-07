@@ -9,7 +9,10 @@ vi.mock('@/lib/env', () => ({
 }));
 
 import { verifyAdminCredentials, isAdminConfigured } from '../lib/admin/auth';
-import { verificationUpdateSchema } from '../lib/admin/registrations';
+import {
+  registrationEditSchema,
+  adminRegistrationUpdateSchema,
+} from '../lib/admin/registrations';
 import { buildRegistrationsWorkbook, type ExportRow } from '../lib/admin/export';
 
 function basicHeader(user: string, pass: string): string {
@@ -47,17 +50,57 @@ describe('admin Basic Auth', () => {
   });
 });
 
-describe('verification update schema', () => {
+describe('verification update payload (status/notes half)', () => {
   it('accepts valid statuses and optional notes', () => {
-    expect(verificationUpdateSchema.safeParse({ status: 'APPROVED' }).success).toBe(true);
-    expect(verificationUpdateSchema.safeParse({ status: 'REJECTED', notes: 'Bukti tidak jelas' }).success).toBe(true);
-    expect(verificationUpdateSchema.safeParse({ status: 'PENDING', notes: null }).success).toBe(true);
+    expect(adminRegistrationUpdateSchema.safeParse({ status: 'APPROVED' }).success).toBe(true);
+    expect(adminRegistrationUpdateSchema.safeParse({ status: 'REJECTED', notes: 'Bukti tidak jelas' }).success).toBe(true);
+    expect(adminRegistrationUpdateSchema.safeParse({ status: 'PENDING', notes: null }).success).toBe(true);
   });
 
   it('rejects unknown statuses and oversized notes', () => {
-    expect(verificationUpdateSchema.safeParse({ status: 'MAYBE' }).success).toBe(false);
-    expect(verificationUpdateSchema.safeParse({ status: 'APPROVED', notes: 'x'.repeat(501) }).success).toBe(false);
-    expect(verificationUpdateSchema.safeParse({}).success).toBe(false);
+    expect(adminRegistrationUpdateSchema.safeParse({ status: 'MAYBE' }).success).toBe(false);
+    expect(adminRegistrationUpdateSchema.safeParse({ status: 'APPROVED', notes: 'x'.repeat(501) }).success).toBe(false);
+  });
+});
+
+describe('registration edit schema (admin data correction)', () => {
+  it('accepts partial and full data edits', () => {
+    expect(registrationEditSchema.safeParse({}).success).toBe(true);
+    expect(registrationEditSchema.safeParse({ phone: '+62 812-3456-7890' }).success).toBe(true);
+    expect(
+      registrationEditSchema.safeParse({ jerseySize: '5XL', classGroup: 'IPS-4', phone: '081234567890' }).success,
+    ).toBe(true);
+  });
+
+  it('rejects invalid enum values and bad phone shapes', () => {
+    expect(registrationEditSchema.safeParse({ jerseySize: 'XXL' }).success).toBe(false);
+    expect(registrationEditSchema.safeParse({ classGroup: 'IPA-9' }).success).toBe(false);
+    expect(registrationEditSchema.safeParse({ phone: '123' }).success).toBe(false);
+    expect(registrationEditSchema.safeParse({ phone: '08123abcd' }).success).toBe(false);
+    expect(registrationEditSchema.safeParse({ phone: 'x'.repeat(21) }).success).toBe(false);
+  });
+});
+
+describe('admin combined update schema', () => {
+  it('accepts status-only (legacy verify flow), data-only, and combined payloads', () => {
+    expect(adminRegistrationUpdateSchema.safeParse({ status: 'APPROVED' }).success).toBe(true);
+    expect(adminRegistrationUpdateSchema.safeParse({ phone: '081200000001' }).success).toBe(true);
+    expect(
+      adminRegistrationUpdateSchema.safeParse({
+        status: 'REJECTED',
+        notes: 'Bukti tidak jelas',
+        jerseySize: '2XL',
+        classGroup: 'IPA-2',
+        phone: '+62 812 3456 7890',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('rejects payloads mixing invalid halves or empty bodies', () => {
+    expect(adminRegistrationUpdateSchema.safeParse({ jerseySize: 'XXL', phone: '081200000001' }).success).toBe(false);
+    expect(adminRegistrationUpdateSchema.safeParse({ status: 'MAYBE', phone: '081200000001' }).success).toBe(false);
+    expect(adminRegistrationUpdateSchema.safeParse({ phone: '1' }).success).toBe(false);
+    expect(adminRegistrationUpdateSchema.safeParse({}).success).toBe(false);
   });
 });
 
