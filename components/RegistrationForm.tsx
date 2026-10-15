@@ -196,7 +196,7 @@ export function RegistrationForm({ initialData, initialName }: RegistrationFormP
           Ukuran Jersey <span className="text-red-500">*</span>
         </label>
         <a
-          href="https://res.cloudinary.com/dhcmpwmu1/image/upload/v1791129511/images/805a2e3c-030b-4b47-957f-7d5e47f22f2b/original.jpg"
+          href="https://res.cloudinary.com/dhcmpwmu1/image/upload/f_auto,q_auto/WhatsApp_Image_2026-10-15_at_08.21.34.jpg"
           target="_blank"
           rel="noopener noreferrer"
           className="text-xs text-teal-600 dark:text-teal-400 underline hover:text-teal-700 dark:hover:text-teal-300"
