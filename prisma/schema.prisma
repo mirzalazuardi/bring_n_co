@@ -51,6 +51,12 @@ enum ImageErrorCategory {
   UNKNOWN
 }
 
+enum QuestionnaireQuestionType {
+  CHOICE
+  SCALE
+  TEXT
+}
+
 model User {
   id            String         @id @default(cuid())
   name          String?
@@ -61,11 +67,12 @@ model User {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
-  registration  Registration?
-  galleryImages Image[]
-  imageAssets   ImageAsset[]
+  accounts             Account[]
+  sessions             Session[]
+  registration         Registration?
+  galleryImages        Image[]
+  imageAssets          ImageAsset[]
+  questionnaireAnswers QuestionnaireAnswer[]
 
   @@map("users")
 }
@@ -172,4 +179,68 @@ model ImageAsset {
   @@index([status])
   @@index([userId])
   @@map("image_assets")
+}
+
+/// Alumni questionnaire (see openspec/changes/feat-questionnaire).
+/// `isOpen` gates submissions, `requireVerified` toggles the registration-
+/// verification gate, `resultsPublished` toggles the public stats page.
+model Questionnaire {
+  id               String   @id @default(cuid())
+  title            String
+  description      String?
+  isOpen           Boolean  @default(false)
+  requireVerified  Boolean  @default(true)
+  resultsPublished Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  questions QuestionnaireQuestion[]
+
+  @@map("questionnaires")
+}
+
+/// `options` JSON shape per type:
+/// - CHOICE: ["1", "2", ...] (custom option values)
+/// - SCALE:  {"min": 1, "max": 5}
+/// - TEXT:   null
+model QuestionnaireQuestion {
+  id              String                    @id @default(cuid())
+  questionnaireId String
+  order           Int                       @default(0)
+  type            QuestionnaireQuestionType
+  label           String
+  description     String?
+  options         Json?
+  required        Boolean                   @default(true)
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
+
+  questionnaire Questionnaire          @relation(fields: [questionnaireId], references: [id], onDelete: Cascade)
+  answers       QuestionnaireAnswer[]
+
+  @@index([questionnaireId])
+  @@map("questionnaire_questions")
+}
+
+/// One stored answer per user per question — resubmission overwrites in place
+/// (koreksi jawaban). `questionnaireId` is denormalized for stats grouping.
+model QuestionnaireAnswer {
+  id              String   @id @default(cuid())
+  questionnaireId String
+  questionId      String
+  userId          String
+  choiceValue     String?
+  numberValue     Int?
+  textValue       String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  question QuestionnaireQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  user     User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([questionId, userId])
+  @@index([questionnaireId, questionId, choiceValue])
+  @@index([questionnaireId, questionId, numberValue])
+  @@index([questionnaireId, userId])
+  @@map("questionnaire_answers")
 }

@@ -14,6 +14,7 @@ import {
   X,
   Sun,
   Moon,
+  ClipboardList,
 } from 'lucide-react';
 
 export function Navbar({ uploadOpen = true }: { uploadOpen?: boolean }) {
@@ -65,6 +66,13 @@ export function Navbar({ uploadOpen = true }: { uploadOpen?: boolean }) {
                 Unggah
               </Link>
             )}
+            <Link
+              href="/kuesioner"
+              className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-stone-600 dark:text-gray-400 hover:text-stone-900 dark:hover:text-gray-100 transition-colors"
+            >
+              <ClipboardList className="w-3.5 h-3.5" />
+              Kuesioner
+            </Link>
           </div>
 
           {/* Right controls */}
@@ -160,6 +168,14 @@ export function Navbar({ uploadOpen = true }: { uploadOpen?: boolean }) {
                 Unggah Foto
               </Link>
             )}
+            <Link
+              href="/kuesioner"
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-stone-600 dark:text-gray-400 hover:text-stone-900 dark:hover:text-gray-100 transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <ClipboardList className="w-3.5 h-3.5" />
+              Kuesioner
+            </Link>
 
             <div className="border-t border-stone-200 dark:border-gray-700 my-2" />
 

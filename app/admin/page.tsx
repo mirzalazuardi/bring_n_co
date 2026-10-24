@@ -51,6 +51,15 @@ export default async function AdminPage() {
           </div>
           <div className="flex gap-2">
             <a
+              href="/admin/kuesioner"
+              className="btn-secondary inline-flex items-center justify-center gap-2 text-sm px-4 py-2.5"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6M6 3h12a2 2 0 012 2v13a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2z" />
+              </svg>
+              Kelola Kuesioner
+            </a>
+            <a
               href="/admin/gallery"
               className="btn-secondary inline-flex items-center justify-center gap-2 text-sm px-4 py-2.5"
             >
