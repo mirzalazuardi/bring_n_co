@@ -307,10 +307,25 @@ export async function spinWheel(
   }
 }
 
+/** JSON-serialized views shared with client components (typed, ISP-sized). */
+export interface ParticipantView {
+  id: string;
+  userId: string;
+  name: string | null;
+}
+export interface PrizeView {
+  id: string;
+  name: string;
+  drawn: boolean;
+}
+export interface DrawView extends Omit<DrawRecord, 'drawnAt'> {
+  drawnAt: string;
+}
+
 export interface WheelSnapshotOk {
   ok: true;
-  participants: { id: string; userId: string; name: string | null }[];
-  prizes: { id: string; name: string; drawn: boolean }[];
+  participants: ParticipantView[];
+  prizes: PrizeView[];
   draws: DrawRecord[];
 }
 export interface WheelSnapshotFailure {

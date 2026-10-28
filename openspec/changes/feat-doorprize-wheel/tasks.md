@@ -24,7 +24,7 @@
   - Verify: route handler tests / `npm run build`
   - Biz impact: unguarded API lets anyone rig the draw or wipe participants
 
-- [ ] [MID] Admin console `/admin/doorprize`
+- [x] [MID] Admin console `/admin/doorprize`
   - Files: `app/admin/doorprize/page.tsx`, `components/AdminDoorprizeManager.tsx`, `components/FortuneWheel.tsx`
   - Change: verified-only participant picker, prize manager, prize select + spin button, CSS conic-gradient wheel whose segments are current participants and lands on winner, winner history, reset button with confirm
   - Verify: manual smoke on `/admin/doorprize`
