@@ -1,0 +1,24 @@
+import { createPrize } from '@/lib/admin/doorprize';
+import { requireAdmin } from '@/lib/admin/api-guard';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
+/** POST /api/admin/wheel/prizes — create a prize by name (REQ-DW-002). */
+export async function POST(request: Request) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
+
+  let body: unknown;
+  try {
+    body = (await request.json()) as { name?: unknown };
+  } catch {
+    return Response.json({ success: false, error: 'Invalid request body' }, { status: 400 });
+  }
+
+  const result = await createPrize((body as { name?: unknown })?.name);
+  if (!result.ok) {
+    return Response.json({ success: false, error: result.error }, { status: result.status });
+  }
+  return Response.json({ success: true, data: result.prize }, { status: 201 });
+}

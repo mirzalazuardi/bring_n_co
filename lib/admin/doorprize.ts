@@ -14,7 +14,7 @@ export const VERIFIED_STATUS = 'APPROVED' as const;
 
 export interface WheelCandidate {
   id: string;
-  name: string | null;
+  name?: string | null;
   registration: { status: string } | null;
 }
 
