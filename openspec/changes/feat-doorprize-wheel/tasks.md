@@ -30,7 +30,7 @@
   - Verify: manual smoke on `/admin/doorprize`
   - Biz impact: operator cannot run the event-night draw
 
-- [ ] [LOW] Admin console link
+- [x] [LOW] Admin console link
   - File: `app/admin/page.tsx`
   - Change: card/button `Doorprize` mirroring questionnaire precedent
   - Verify: visual check

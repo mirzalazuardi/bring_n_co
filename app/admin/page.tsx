@@ -51,6 +51,15 @@ export default async function AdminPage() {
           </div>
           <div className="flex gap-2">
             <a
+              href="/admin/doorprize"
+              className="btn-secondary inline-flex items-center justify-center gap-2 text-sm px-4 py-2.5"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13a3 3 0 00-3-3H4v9h4.5M12 8a3 3 0 013-3h5v9h-4.5M8 21a2 2 0 002-2v-2a2 2 0 00-2-2H4v2a2 2 0 002 2zm8-2a2 2 0 002 2h4v-4h-4a2 2 0 00-2 2" />
+              </svg>
+              Undian Doorprize
+            </a>
+            <a
               href="/admin/kuesioner"
               className="btn-secondary inline-flex items-center justify-center gap-2 text-sm px-4 py-2.5"
             >
