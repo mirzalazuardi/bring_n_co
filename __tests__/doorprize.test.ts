@@ -1,0 +1,80 @@
+import { describe, it, expect, vi } from 'vitest';
+
+// The service module imports the prisma singleton at module scope; stub it so
+// no real client / database is touched in unit tests.
+vi.mock('@/lib/prisma', () => {
+  const prisma = {};
+  return { default: prisma, prisma };
+});
+
+import {
+  prizeNameSchema,
+  wheelUserIdSchema,
+} from '../lib/validations/doorprize';
+import {
+  isVerifiedCandidate,
+  filterVerifiedCandidates,
+  pickWinnerId,
+} from '../lib/admin/doorprize';
+
+describe('doorprize payload schemas', () => {
+  it('accepts trimmed prize names up to 120 chars', () => {
+    const parsed = prizeNameSchema.safeParse('  Tumbler Silver  ');
+    expect(parsed.success).toBe(true);
+    expect(parsed.success && parsed.data).toBe('Tumbler Silver');
+    expect(prizeNameSchema.safeParse('x'.repeat(120)).success).toBe(true);
+  });
+
+  it('rejects empty or oversized prize names', () => {
+    expect(prizeNameSchema.safeParse('   ').success).toBe(false);
+    expect(prizeNameSchema.safeParse('x'.repeat(121)).success).toBe(false);
+  });
+
+  it('rejects missing userId payloads', () => {
+    expect(wheelUserIdSchema.safeParse({ userId: 'user_1' }).success).toBe(true);
+    expect(wheelUserIdSchema.safeParse({ userId: '' }).success).toBe(false);
+    expect(wheelUserIdSchema.safeParse({}).success).toBe(false);
+  });
+});
+
+describe('verified-eligibility filter', () => {
+  const approved = { id: 'u1', name: 'Andi', registration: { status: 'APPROVED' } };
+  const pending = { id: 'u2', name: 'Budi', registration: { status: 'PENDING' } };
+  const rejected = { id: 'u3', name: 'Cici', registration: { status: 'REJECTED' } };
+  const unregistered = { id: 'u4', name: 'Dedi', registration: null };
+
+  it('keeps only users with an APPROVED registration', () => {
+    const users = [approved, pending, rejected, unregistered];
+    expect(filterVerifiedCandidates(users).map((u) => u.id)).toEqual(['u1']);
+    expect(isVerifiedCandidate(approved)).toBe(true);
+    expect(isVerifiedCandidate(pending)).toBe(false);
+    expect(isVerifiedCandidate(rejected)).toBe(false);
+    expect(isVerifiedCandidate(unregistered)).toBe(false);
+  });
+
+  it('throws when input is not an array', () => {
+    // @ts-expect-error runtime guard exercised intentionally
+    expect(() => filterVerifiedCandidates(null)).toThrow();
+  });
+});
+
+describe('pickWinnerId', () => {
+  const ids = ['a', 'b', 'c'];
+
+  it('returns null on an empty wheel', () => {
+    expect(pickWinnerId([], Math.random)).toBeNull();
+  });
+
+  it('maps the injected random uniformly across segments', () => {
+    expect(pickWinnerId(ids, () => 0)).toBe('a');
+    expect(pickWinnerId(ids, () => 0.4)).toBe('b');
+    expect(pickWinnerId(ids, () => 0.7)).toBe('c');
+    expect(pickWinnerId(ids, () => 0.999999)).toBe('c');
+  });
+
+  it('never returns an id outside the wheel', () => {
+    for (let i = 0; i < 100; i++) {
+      expect(ids).toContain(pickWinnerId(ids, Math.random));
+    }
+  });
+});
