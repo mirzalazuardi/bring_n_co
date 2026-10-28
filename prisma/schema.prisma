@@ -73,6 +73,8 @@ model User {
   galleryImages        Image[]
   imageAssets          ImageAsset[]
   questionnaireAnswers QuestionnaireAnswer[]
+  wheelParticipant     WheelParticipant?
+  wheelDraws           WheelDraw[]
 
   @@map("users")
 }
@@ -243,4 +245,46 @@ model QuestionnaireAnswer {
   @@index([questionnaireId, questionId, numberValue])
   @@index([questionnaireId, userId])
   @@map("questionnaire_answers")
+}
+
+/// Doorprize fortune wheel (see openspec/changes/feat-doorprize-wheel).
+/// The wheel segments are participants; a participant leaves the wheel
+/// (row deleted) the moment they win a prize.
+model WheelPrize {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  draws WheelDraw[]
+
+  @@map("wheel_prizes")
+}
+
+/// One row per user in the wheel. Winning deletes the row (REQ-DW-003),
+/// so remaining rows are exactly the current wheel segments.
+model WheelParticipant {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("wheel_participants")
+}
+
+/// Immutable draw history: which user won which prize, and when.
+model WheelDraw {
+  id      String   @id @default(cuid())
+  prizeId String
+  userId  String
+  drawnAt DateTime @default(now())
+
+  prize WheelPrize @relation(fields: [prizeId], references: [id], onDelete: Restrict)
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([prizeId])
+  @@index([userId])
+  @@index([drawnAt])
+  @@map("wheel_draws")
 }
