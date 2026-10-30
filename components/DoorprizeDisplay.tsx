@@ -67,10 +67,10 @@ export function DoorprizeDisplay({ initialState }: { initialState: DisplayState 
         }}
       />
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-[1700px] flex-col items-center justify-center gap-8 px-5 py-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(22rem,30rem)] lg:gap-12 lg:px-10">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-[1900px] flex-col items-center justify-center gap-8 px-5 py-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(19rem,24rem)] lg:gap-10 lg:px-8">
         {/* Wheel — grows with the viewport, capped so the side panel always fits */}
         <section className="order-2 flex w-full justify-center lg:order-1">
-          <div className="w-full max-w-[min(88vw,72vh,900px)]">
+          <div className="w-full max-w-[min(92vw,80vh,1100px)]">
             <FortuneWheel segments={state.participants} winnerIndex={null} />
           </div>
         </section>
