@@ -36,7 +36,7 @@
   - Verify: visual check
   - Biz impact: feature hidden → committee can't find it
 
-- [ ] [MID] Public display page `/display/doorprize` + public read API
+- [x] [MID] Public display page `/display/doorprize` + public read API
   - Files: `app/api/display/doorprize/route.ts`, `app/display/doorprize/page.tsx`, `components/DoorprizeDisplay.tsx`
   - Change: public GET returns remaining participants + recent draws; read-only client page (no auth, no controls) renders live wheel and announces newest winner; polls every ~3 s, refetch on visibility
   - Verify: manual smoke + build
