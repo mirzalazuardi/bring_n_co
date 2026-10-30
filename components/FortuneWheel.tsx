@@ -152,8 +152,10 @@ export function FortuneWheel({ segments, winnerIndex, onLanded, maxSizePx }: For
         >
           {showLabels && segments.map((name, i) => {
             const theta = (i + 0.5) * seg;
-            // Left half is flipped so no label ends up upside down.
-            const flip = theta > 180;
+            // Flip against the *screen* angle (segment angle + wheel rotation),
+            // not the wheel frame: the pointer sits at 3 o'clock, so the landed
+            // segment must read horizontally even after a 180deg-ish spin.
+            const flip = mod360(theta + rotation) > 180;
             return (
               <div
                 key={`${i}-${name}`}
