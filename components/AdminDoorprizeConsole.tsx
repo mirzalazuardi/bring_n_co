@@ -259,18 +259,19 @@ export function AdminDoorprizeConsole({
         </div>
       </section>
 
-      {/* Management */}
-      <section className="grid sm:grid-cols-2 gap-6">
+      {/* Management — single stacked column so the narrow side panel never
+          squeezes the add controls out of their card */}
+      <section className="flex flex-col gap-6">
         {/* Participants */}
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm space-y-3">
           <h2 className="font-bold text-gray-900 dark:text-gray-100">
             Peserta Wheel <span className="text-gray-400 font-normal">({participants.length})</span>
           </h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <select
               value={candidateId}
               onChange={(e) => setCandidateId(e.target.value)}
-              className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+              className="min-w-0 flex-1 basis-40 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
             >
               <option value="">— pilih alumni terverifikasi —</option>
               {candidates.map((c) => (
@@ -281,7 +282,7 @@ export function AdminDoorprizeConsole({
               type="button"
               onClick={addParticipant}
               disabled={busy || spinning || !candidateId}
-              className="btn-secondary inline-flex items-center gap-1 text-sm px-3 py-2 disabled:opacity-50"
+              className="btn-secondary inline-flex shrink-0 items-center justify-center gap-1 text-sm px-3 py-2 disabled:opacity-50"
             >
               <UserPlus className="w-4 h-4" /> Tambah
             </button>
@@ -292,12 +293,12 @@ export function AdminDoorprizeConsole({
                 key={p.id}
                 className="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2"
               >
-                <span className="text-gray-900 dark:text-gray-100">{p.name ?? p.userId}</span>
+                <span className="min-w-0 truncate text-gray-900 dark:text-gray-100">{p.name ?? p.userId}</span>
                 <button
                   type="button"
                   onClick={() => removeParticipant(p.id)}
                   disabled={busy || spinning}
-                  className="text-gray-400 hover:text-red-600 disabled:opacity-40"
+                  className="shrink-0 text-gray-400 hover:text-red-600 disabled:opacity-40"
                   aria-label={`Hapus peserta ${p.name ?? p.userId}`}
                 >
                   <X className="w-4 h-4" />
@@ -315,19 +316,19 @@ export function AdminDoorprizeConsole({
           <h2 className="font-bold text-gray-900 dark:text-gray-100">
             Hadiah <span className="text-gray-400 font-normal">({prizes.length})</span>
           </h2>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <input
               value={prizeName}
               onChange={(e) => setPrizeName(e.target.value)}
               maxLength={120}
-              placeholder="Nama hadiah baru (identik bisa diduplikasi)"
-              className="flex-1 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
+              placeholder="Nama hadiah baru"
+              className="min-w-0 flex-1 basis-40 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-sm"
             />
             <button
               type="button"
               onClick={addPrize}
               disabled={busy || spinning || prizeName.trim().length === 0}
-              className="btn-secondary inline-flex items-center gap-1 text-sm px-3 py-2 disabled:opacity-50"
+              className="btn-secondary inline-flex shrink-0 items-center justify-center gap-1 text-sm px-3 py-2 disabled:opacity-50"
             >
               <Plus className="w-4 h-4" /> Tambah
             </button>
@@ -338,7 +339,7 @@ export function AdminDoorprizeConsole({
                 key={p.id}
                 className="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2"
               >
-                <span className="text-gray-900 dark:text-gray-100">
+                <span className="min-w-0 truncate text-gray-900 dark:text-gray-100">
                   {p.name}
                   {p.drawn && <span className="ml-2 text-[10px] text-gray-400">(sudah pernah diundi)</span>}
                 </span>
@@ -364,7 +365,7 @@ export function AdminDoorprizeConsole({
         </div>
 
         {/* History */}
-        <div className="sm:col-span-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm space-y-3">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm space-y-3">
           <h2 className="font-bold text-gray-900 dark:text-gray-100">
             Riwayat Pemenang <span className="text-gray-400 font-normal">({draws.length})</span>
           </h2>
