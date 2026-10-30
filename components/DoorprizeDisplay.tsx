@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { FortuneWheel } from '@/components/FortuneWheel';
-import { Trophy } from 'lucide-react';
+import { Trophy, Users } from 'lucide-react';
 
 /**
  * Projector page for the doorprize draw (REQ-DW-005). Read-only, no
@@ -57,55 +57,82 @@ export function DoorprizeDisplay({ initialState }: { initialState: DisplayState 
   }, [poll]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-teal-900 via-teal-950 to-gray-950 text-white flex flex-col items-center px-4 py-8 gap-6 overflow-hidden">
-      <header className="text-center">
-        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
-          Doorprize Reuni Silver
-        </h1>
-        <p className="text-teal-300 mt-1 text-sm sm:text-base">
-          Peserta di wheel: <strong>{state.participants.length}</strong>
-        </p>
-      </header>
+    <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-teal-950 via-teal-900 to-stone-950 text-white">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-80"
+        style={{
+          background:
+            'radial-gradient(circle at 18% 12%, rgba(245,158,11,0.20), transparent 55%), radial-gradient(circle at 85% 85%, rgba(200,90,154,0.20), transparent 55%)',
+        }}
+      />
 
-      <FortuneWheel segments={state.participants} winnerIndex={null} sizePx={Math.min(460, (typeof window !== 'undefined' ? Math.min(window.innerWidth - 64, 460) : 380))} />
-
-      {state.latest ? (
-        <section
-          className={`text-center rounded-3xl border px-8 py-6 max-w-2xl transition ${
-            flash
-              ? 'animate-pulse bg-teal-500/30 border-teal-300'
-              : 'bg-white/5 border-teal-700'
-          }`}
-        >
-          <p className="text-teal-300 text-sm uppercase tracking-widest flex items-center justify-center gap-2">
-            <Trophy className="w-4 h-4" /> Pemenang terakhir
-          </p>
-          <p className="text-4xl sm:text-5xl font-extrabold mt-2">
-            {state.latest.userName ?? 'Pemenang'}
-          </p>
-          <p className="text-xl text-teal-200 mt-1">mendapatkan {state.latest.prizeName}</p>
+      <div className="relative mx-auto flex min-h-screen w-full max-w-[1700px] flex-col items-center justify-center gap-8 px-5 py-8 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(22rem,30rem)] lg:gap-12 lg:px-10">
+        {/* Wheel — grows with the viewport, capped so the side panel always fits */}
+        <section className="order-2 flex w-full justify-center lg:order-1">
+          <div className="w-full max-w-[min(88vw,72vh,900px)]">
+            <FortuneWheel segments={state.participants} winnerIndex={null} />
+          </div>
         </section>
-      ) : (
-        <p className="text-teal-300/70 text-lg">Menunggu undian pertama…</p>
-      )}
 
-      {state.history.length > 1 && (
-        <section className="w-full max-w-2xl">
-          <h2 className="text-center text-teal-300 text-xs uppercase tracking-widest mb-2">
-            Riwayat
-          </h2>
-          <ul className="flex flex-wrap justify-center gap-2 max-h-28 overflow-hidden">
-            {state.history.map((h, i) => (
-              <li
-                key={`${h.drawnAt}-${i}`}
-                className="text-xs bg-white/5 border border-white/10 rounded-full px-3 py-1"
-              >
-                {h.userName} — {h.prizeName}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+        <aside className="order-1 w-full space-y-5 text-center lg:order-2 lg:text-left">
+          <header>
+            <p className="text-[0.7rem] uppercase tracking-[0.4em] text-amber-300">
+              Doorprize
+            </p>
+            <h1 className="font-display mt-1 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+              Reuni Silver
+            </h1>
+            <p className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-400/10 px-3 py-1 text-sm text-teal-100">
+              <Users className="h-4 w-4 text-teal-300" />
+              <strong className="font-semibold text-white">{state.participants.length}</strong>
+              peserta di wheel
+            </p>
+          </header>
+
+          {state.latest ? (
+            <section
+              className={`rounded-3xl border px-6 py-6 shadow-xl transition ${
+                flash
+                  ? 'animate-pulse border-amber-300 bg-amber-400/20'
+                  : 'border-teal-600/60 bg-white/5'
+              }`}
+            >
+              <p className="flex items-center justify-center gap-2 text-xs uppercase tracking-[0.3em] text-amber-300 lg:justify-start">
+                <Trophy className="h-4 w-4" /> Pemenang terakhir
+              </p>
+              <p className="mt-2 text-4xl font-extrabold leading-tight sm:text-5xl">
+                {state.latest.userName ?? 'Pemenang'}
+              </p>
+              <p className="mt-1 text-lg text-teal-200">
+                mendapatkan <span className="font-semibold text-white">{state.latest.prizeName}</span>
+              </p>
+            </section>
+          ) : (
+            <p className="rounded-3xl border border-dashed border-teal-600/60 bg-white/5 px-6 py-6 text-lg text-teal-200/80">
+              Menunggu undian pertama…
+            </p>
+          )}
+
+          {state.history.length > 1 && (
+            <section>
+              <h2 className="text-center text-[0.7rem] uppercase tracking-[0.3em] text-teal-300 lg:text-left">
+                Riwayat
+              </h2>
+              <ul className="mt-2 flex max-h-40 flex-wrap justify-center gap-2 overflow-hidden lg:justify-start">
+                {state.history.map((h, i) => (
+                  <li
+                    key={`${h.drawnAt}-${i}`}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-teal-50"
+                  >
+                    {h.userName} — {h.prizeName}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </aside>
+      </div>
     </main>
   );
 }

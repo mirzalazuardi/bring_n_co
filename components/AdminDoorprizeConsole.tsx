@@ -195,16 +195,21 @@ export function AdminDoorprizeConsole({
   }, [refreshState, refreshCandidates]);
 
   return (
-    <div className="grid lg:grid-cols-5 gap-6">
+    <div className="grid gap-6 xl:grid-cols-5">
       {/* Wheel + draw */}
-      <section className="lg:col-span-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm space-y-4">
-        <h2 className="font-bold text-gray-900 dark:text-gray-100">Wheel Undian</h2>
+      <section className="xl:col-span-2 bg-gradient-to-br from-amber-50 via-white to-teal-50 dark:from-gray-800 dark:via-gray-800 dark:to-teal-950/40 border border-amber-200/70 dark:border-gray-700 rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="font-bold text-gray-900 dark:text-gray-100">Wheel Undian</h2>
+          <span className="badge-teal">{participants.length} peserta</span>
+        </div>
         <div className="flex justify-center py-2">
-          <FortuneWheel
-            segments={participants.map((p) => p.name ?? p.userId)}
-            winnerIndex={winnerIndex}
-            onLanded={onLanded}
-          />
+          <div className="w-full max-w-[520px]">
+            <FortuneWheel
+              segments={participants.map((p) => p.name ?? p.userId)}
+              winnerIndex={winnerIndex}
+              onLanded={onLanded}
+            />
+          </div>
         </div>
 
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -255,7 +260,7 @@ export function AdminDoorprizeConsole({
       </section>
 
       {/* Management */}
-      <section className="lg:col-span-3 grid sm:grid-cols-2 gap-6">
+      <section className="xl:col-span-3 grid sm:grid-cols-2 gap-6">
         {/* Participants */}
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-5 shadow-sm space-y-3">
           <h2 className="font-bold text-gray-900 dark:text-gray-100">
