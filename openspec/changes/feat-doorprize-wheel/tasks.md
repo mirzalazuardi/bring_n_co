@@ -50,8 +50,12 @@
 
 ## Verification
 
-- [ ] `npm test`
-- [ ] `npm run lint`
-- [ ] `npm run build`
-- [ ] `npx prisma migrate deploy`
-- [ ] Manual smoke: admin spin on `/admin/doorprize`, winner leaves wheel, history correct, `/display/doorprize` follows
+- [x] `npm test` — 145/145 green (19 files, incl. 8 new doorprize tests)
+- [x] `npm run lint` — 0 errors, 11 pre-existing/accepted warnings (10 baseline + 1 `react-hooks/set-state-in-effect` in FortuneWheel, same pattern as EventCountdown/ThemeProvider)
+- [x] `npm run build` — green; routes `/admin/doorprize`, `/display/doorprize`, `/api/display/doorprize` emitted
+- [x] `npx prisma migrate deploy` — `20261028000000_doorprize_wheel` applied (Neon, `migrate status` up to date)
+- [x] Manual smoke (`next start`, 2026-10-30): spin 401 unauthenticated ✓ · create prize 201 ✓ · add unverified participant 400 ✓ · duplicate participant 409 ✓ · spin → winner recorded & removed from wheel ✓ · empty-wheel spin 400 ✓ · delete drawn prize 409 (after fix) ✓ · public display API shows latest winner ✓ · reset clears draws+participants ✓ · DB left clean
+
+## Notes
+
+- Fix during smoke: `deletePrize` returned 500 instead of 409 for drawn prizes — Prisma surfaces the FK violation as `PrismaClientUnknownRequestError` (no `code`) against Neon. Fixed with an application-level draw count check before delete (FK Restrict remains the last line of defense).

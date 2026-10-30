@@ -110,12 +110,16 @@ export async function createPrize(
   }
 }
 
-/** Delete a prize; drawn prizes are protected by the Restrict FK (REQ-DW-002). */
+/** Delete a prize; drawn prizes are protected (REQ-DW-002). */
 export async function deletePrize(
   prizeId: string,
   client = prisma,
 ): Promise<{ ok: true } | PrizeFailure> {
   try {
+    const drawn = await client.wheelDraw.count({ where: { prizeId } });
+    if (drawn > 0) {
+      return { ok: false, error: 'Hadiah sudah pernah diundi dan tidak dapat dihapus', status: 409 };
+    }
     await client.wheelPrize.delete({ where: { id: prizeId } });
     return { ok: true };
   } catch (error) {
