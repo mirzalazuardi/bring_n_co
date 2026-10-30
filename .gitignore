@@ -50,3 +50,4 @@ ai-agent_docs
 
 # local env typo variant (contains real secrets)
 .env_local
+.env*
