@@ -42,7 +42,7 @@
   - Verify: manual smoke + build
   - Biz impact: projector page broken → alumni can't follow the draw, transparency goal lost
 
-- [ ] [MID] Vitest coverage
+- [x] [MID] Vitest coverage
   - File: `__tests__/doorprize.test.ts`
   - Change: Zod schemas, verified-eligibility filtering, pick/dispatch logic, conflict & empty cases
   - Verify: `npm test`
