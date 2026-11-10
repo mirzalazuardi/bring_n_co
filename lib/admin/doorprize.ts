@@ -190,6 +190,63 @@ export async function addParticipant(
   }
 }
 
+export interface BulkParticipantOk {
+  ok: true;
+  /** Rows actually inserted. */
+  added: number;
+  /** Eligible candidates the bulk add considered. */
+  total: number;
+}
+export interface BulkParticipantFailure {
+  ok: false;
+  error: string;
+  status: 500;
+}
+
+/**
+ * Bulk-add every verified registrant who is not yet on the wheel — one click
+ * to fill the wheel with the whole verified class list (REQ-DW-001). The
+ * unique `userId` constraint keeps repeated calls idempotent.
+ */
+export async function addAllParticipants(
+  client = prisma,
+): Promise<BulkParticipantOk | BulkParticipantFailure> {
+  const eligible = await listEligibleCandidates(client);
+  if (!eligible.ok) {
+    return { ok: false, error: eligible.error, status: 500 };
+  }
+  const userIds = eligible.candidates.map((candidate) => candidate.id);
+  if (userIds.length === 0) {
+    return { ok: true, added: 0, total: 0 };
+  }
+  try {
+    const created = await client.wheelParticipant.createMany({
+      data: userIds.map((userId) => ({ userId })),
+      skipDuplicates: true,
+    });
+    return { ok: true, added: created.count, total: userIds.length };
+  } catch (error) {
+    console.error('[doorprize] addAllParticipants failed', error);
+    return { ok: false, error: 'Gagal menambah semua peserta', status: 500 };
+  }
+}
+
+/**
+ * Remove every participant from the wheel without touching prizes or draw
+ * history — unlike `resetWheel`, which also clears the winners list.
+ */
+export async function removeAllParticipants(
+  client = prisma,
+): Promise<{ ok: true; removed: number } | { ok: false; error: string; status: 500 }> {
+  try {
+    const result = await client.wheelParticipant.deleteMany({});
+    return { ok: true, removed: result.count };
+  } catch (error) {
+    console.error('[doorprize] removeAllParticipants failed', error);
+    return { ok: false, error: 'Gagal menghapus semua peserta', status: 500 };
+  }
+}
+
 /** Remove a participant who has not won (admin cleanup, REQ-DW-001). */
 export async function removeParticipant(
   participantId: string,

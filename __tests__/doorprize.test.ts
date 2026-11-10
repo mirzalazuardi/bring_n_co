@@ -15,7 +15,11 @@ import {
   isVerifiedCandidate,
   filterVerifiedCandidates,
   pickWinnerId,
+  addAllParticipants,
+  removeAllParticipants,
 } from '../lib/admin/doorprize';
+
+type DoorprizeClient = NonNullable<Parameters<typeof addAllParticipants>[0]>;
 
 describe('doorprize payload schemas', () => {
   it('accepts trimmed prize names up to 120 chars', () => {
@@ -55,6 +59,55 @@ describe('verified-eligibility filter', () => {
   it('throws when input is not an array', () => {
     // @ts-expect-error runtime guard exercised intentionally
     expect(() => filterVerifiedCandidates(null)).toThrow();
+  });
+});
+
+describe('bulk participant management', () => {
+  it('adds only verified candidates that are not already on the wheel', async () => {
+    const created: { userId: string }[] = [];
+    const client = {
+      user: {
+        findMany: async () => [
+          { id: 'u1', name: 'Andi' },
+          { id: 'u2', name: 'Budi' },
+          { id: 'u3', name: 'Cici' },
+        ],
+      },
+      wheelParticipant: {
+        findMany: async () => [{ userId: 'u2' }],
+        createMany: async ({ data }: { data: { userId: string }[] }) => {
+          created.push(...data);
+          return { count: data.length };
+        },
+      },
+    } as unknown as DoorprizeClient;
+
+    await expect(addAllParticipants(client)).resolves.toEqual({ ok: true, added: 2, total: 2 });
+    expect(created.map((c) => c.userId)).toEqual(['u1', 'u3']);
+  });
+
+  it('is a no-op when every verified candidate is already on the wheel', async () => {
+    const client = {
+      user: { findMany: async () => [{ id: 'u1', name: 'Andi' }] },
+      wheelParticipant: {
+        findMany: async () => [{ userId: 'u1' }],
+        createMany: async () => {
+          throw new Error('createMany must not run');
+        },
+      },
+    } as unknown as DoorprizeClient;
+
+    await expect(addAllParticipants(client)).resolves.toEqual({ ok: true, added: 0, total: 0 });
+  });
+
+  it('removes every participant in one sweep', async () => {
+    const client = {
+      wheelParticipant: {
+        deleteMany: async () => ({ count: 145 }),
+      },
+    } as unknown as DoorprizeClient;
+
+    await expect(removeAllParticipants(client)).resolves.toEqual({ ok: true, removed: 145 });
   });
 });
 

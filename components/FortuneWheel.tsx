@@ -10,10 +10,12 @@ import { Gift } from 'lucide-react';
  * land the pointer on it — the result is never chosen here.
  *
  * Labels are rendered radially (reading outward on the right half, inward on
- * the left half) so names stay legible even with a dozen segments. The wheel
- * fills its parent up to `maxSizePx`, so callers only need to constrain the
- * wrapper width. The fixed pointer sits at 3 o'clock (right side) so it never
- * covers the labels along the top arc.
+ * the left half). Their band and font scale with the segment count, so a full
+ * class list (145 names) still fits: each slice is only a few degrees wide, so
+ * labels move outward and shrink to the slice arc instead of overlapping. The
+ * wheel fills its parent up to `maxSizePx`, so callers only need to constrain
+ * the wrapper width. The fixed pointer sits at 3 o'clock (right side) so it
+ * never covers the labels along the top arc.
  */
 
 /** Reunion palette shades, each dark enough for white label text. */
@@ -24,7 +26,8 @@ const SEGMENT_COLORS = [
 ];
 
 const SPIN_MS = 4200;
-const MAX_LABELED_SEGMENTS = 20;
+/** Preferred label height in px; narrower slices scale down from here. */
+const LABEL_TARGET_FONT = 13;
 const BULB_COUNT = 18;
 /** Pointer angle: 0deg = top, clockwise. 90deg = 3 o'clock (right side). */
 const POINTER_ANGLE = 90;
@@ -98,25 +101,35 @@ export function FortuneWheel({ segments, winnerIndex, onLanded, maxSizePx }: For
 
   const rim = Math.max(9, Math.round(boxSize * 0.04));
   const disc = Math.max(1, boxSize - rim * 2);
+  const radius = disc / 2;
   const gradient = count > 0
     ? buildGradient(count, seg)
     : 'repeating-conic-gradient(#e7e5e4 0 15deg, #f5f5f4 15deg 30deg)';
 
-  const labelFont = Math.max(
-    11,
-    Math.round(Math.min(disc * 0.036, 26) * (count > 12 ? 0.86 : 1)),
-  );
-  const labelThickness = Math.round(labelFont * 1.45);
-  // Labels live in the band between the center hub and the rim, never crossing
-  // the hub (which would paint text over the opposite segment).
-  const labelInner = disc * 0.14;
-  const labelOuter = disc * 0.45;
-  const labelLength = Math.round(labelOuter - labelInner);
-  const labelCenter = (labelInner + labelOuter) / 2;
-  const showLabels = count > 0 && count <= MAX_LABELED_SEGMENTS;
-
-  const hub = Math.max(54, Math.round(disc * 0.19));
+  const hub = Math.max(48, Math.min(Math.round(disc * 0.19), Math.round(radius * 0.44)));
+  const hubRadius = hub / 2;
   const hubFont = Math.max(8, Math.round(Math.min(hub * 0.115, 12)));
+
+  // Radial labels: a name's height is limited by the arc width of its slice,
+  // which shrinks as the segment count grows. With many segments the band
+  // therefore starts further out (where the arc is widest) and the font is
+  // capped by that arc, keeping every name inside its own slice. Labels never
+  // cross the hub, which would paint text over the opposite segment.
+  const countForGeometry = Math.max(count, 1);
+  const arcWidth = (r: number) => (2 * Math.PI * r) / countForGeometry;
+  const idealInner = (countForGeometry * LABEL_TARGET_FONT) / (2 * Math.PI * 0.82);
+  const labelInner = Math.min(
+    Math.max(hubRadius + 12, radius * 0.26, idealInner),
+    radius * 0.66,
+  );
+  const labelOuter = radius * 0.97;
+  const labelArc = arcWidth(labelInner);
+  const labelFont = Math.max(4, Math.min(labelArc * 0.78, LABEL_TARGET_FONT + 5, disc * 0.05));
+  const labelThickness = Math.max(4, Math.min(labelFont * 1.4, labelArc - 1));
+  const labelLength = Math.max(24, Math.round(labelOuter - labelInner));
+  const labelCenter = (labelInner + labelOuter) / 2;
+  const labelPadding = Math.max(2, Math.round(labelFont * 0.35));
+  const showLabels = count > 0;
   const bulb = Math.max(3, Math.min(8, Math.round(boxSize * 0.013)));
   const bulbRadius = boxSize / 2 - rim / 2;
   const pointerWidth = Math.max(18, Math.round(boxSize * 0.06));
@@ -170,7 +183,7 @@ export function FortuneWheel({ segments, winnerIndex, onLanded, maxSizePx }: For
                     transform: `translate(-50%, -50%) translateY(-${labelCenter}px) rotate(${flip ? 90 : -90}deg)`,
                     fontSize: labelFont,
                     lineHeight: 1.1,
-                    padding: '0 6px',
+                    padding: `0 ${labelPadding}px`,
                     textShadow: '0 1px 2px rgba(0, 0, 0, 0.4)',
                   }}
                   title={name}

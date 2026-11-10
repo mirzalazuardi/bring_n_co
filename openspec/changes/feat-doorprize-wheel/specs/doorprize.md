@@ -12,7 +12,7 @@ Operational note: the committee tests the wheel before the event, so a Reset act
 
 ### REQ-DW-001: Participant management restricted to verified registrants
 
-The admin console MUST let the admin add participants manually, and the add endpoint MUST only accept users with a registration of status `APPROVED`. Each user MUST appear at most once in the wheel (unique constraint). The admin MUST be able to remove a participant without a draw.
+The admin console MUST let the admin add participants manually, add all verified registrants in one action, remove a single participant, and remove all participants. The add endpoints MUST only accept users with a registration of status `APPROVED`. Each user MUST appear at most once in the wheel (unique constraint). The admin MUST be able to remove a participant without a draw. Removing all participants MUST keep prize definitions and winner history intact (unlike Reset). The wheel MUST stay legible for a full class list of ~145 names: segment labels scale with the segment count and the layout gives the wheel enough room.
 
 #### Scenario: Eligible participant added
 
@@ -31,6 +31,28 @@ The admin console MUST let the admin add participants manually, and the add endp
 - **Given** a user already in the wheel
 - **When** admin adds them again
 - **Then** the request fails with a conflict response
+
+#### Scenario: Add all verified registrants
+
+- **Given** 145 verified alumni, 10 of whom are already on the wheel
+- **When** admin uses "Tambah semua"
+- **Then** the remaining 135 are added in one call and the wheel shows 145 names
+- **Given** every verified alumni is already on the wheel
+- **Then** the action reports 0 added and changes nothing
+
+#### Scenario: Remove one / remove all
+
+- **Given** a wheel with several participants
+- **When** admin removes one participant
+- **Then** only that segment disappears
+- **When** admin confirms "Hapus semua"
+- **Then** the wheel is empty while prizes and winner history remain
+
+#### Scenario: 145 names stay readable
+
+- **Given** a wheel holding 145 participants
+- **When** the admin console or projector display renders it
+- **Then** every name is drawn inside its own slice (labels shrink to the slice arc), not hidden or overlapping, and the layout sizes the wheel as large as the viewport allows
 
 **If broken:** the pool contains ineligible alumni or double entries → selection is unfair; only a subset of alumni can take part. Impact when failing: **MEDIUM**.
 

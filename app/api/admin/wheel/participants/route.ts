@@ -1,4 +1,4 @@
-import { addParticipant, listEligibleCandidates } from '@/lib/admin/doorprize';
+import { addParticipant, listEligibleCandidates, removeAllParticipants } from '@/lib/admin/doorprize';
 import { wheelUserIdSchema } from '@/lib/validations/doorprize';
 import { requireAdmin } from '@/lib/admin/api-guard';
 
@@ -45,4 +45,19 @@ export async function POST(request: Request) {
     return Response.json({ success: false, error: result.error }, { status: result.status });
   }
   return Response.json({ success: true, data: result.participant }, { status: 201 });
+}
+
+/**
+ * DELETE /api/admin/wheel/participants — clear the wheel in one call. Prize
+ * definitions and the winner history stay intact.
+ */
+export async function DELETE(request: Request) {
+  const denied = requireAdmin(request);
+  if (denied) return denied;
+
+  const result = await removeAllParticipants();
+  if (!result.ok) {
+    return Response.json({ success: false, error: result.error }, { status: result.status });
+  }
+  return Response.json({ success: true, data: { removed: result.removed } });
 }
