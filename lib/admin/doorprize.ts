@@ -383,6 +383,32 @@ export interface DrawView extends Omit<DrawRecord, 'drawnAt'> {
   drawnAt: string;
 }
 
+/**
+ * Stable 32-bit FNV-1a hash of a participant id. Used only as a sort key, so
+ * the same participant always lands on the same segment.
+ */
+export function hashKey(value: string): number {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return hash >>> 0;
+}
+
+/**
+ * Wheel segment order: pseudo-random by participant id, never alphabetical.
+ * Hashing each id independently makes the order deterministic (it survives
+ * polling, refetches and removals) while looking shuffled, so the draw does
+ * not march through the class list in name order. The admin's participant
+ * list panel sorts alphabetically on its own.
+ */
+export function wheelOrder<T extends { userId: string }>(participants: T[]): T[] {
+  return [...participants].sort(
+    (a, b) => hashKey(a.userId) - hashKey(b.userId) || a.userId.localeCompare(b.userId),
+  );
+}
+
 export interface WheelSnapshotOk {
   ok: true;
   participants: ParticipantView[];
@@ -424,7 +450,8 @@ export async function getWheelSnapshot(client = prisma): Promise<WheelSnapshotOk
     ]);
     return {
       ok: true,
-      participants: participants.map((p) => ({ id: p.id, userId: p.userId, name: p.user.name })),
+      // Shuffled segment order (see wheelOrder); the side panel re-sorts by name.
+      participants: wheelOrder(participants).map((p) => ({ id: p.id, userId: p.userId, name: p.user.name })),
       prizes: prizes.map((p) => ({ id: p.id, name: p.name, drawn: p.draws.length > 0 })),
       draws: drawsRaw.map((d) => ({
         id: d.id,

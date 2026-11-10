@@ -25,7 +25,9 @@ const SEGMENT_COLORS = [
   '#c2410c', '#6d28d9', '#15803d', '#9f1239',
 ];
 
-const SPIN_MS = 4200;
+/** Each spin runs for a random duration in this range (ms). */
+const SPIN_MIN_MS = 10_000;
+const SPIN_MAX_MS = 18_000;
 /** Preferred label height in px; narrower slices scale down from here. */
 const LABEL_TARGET_FONT = 13;
 const BULB_COUNT = 18;
@@ -59,6 +61,7 @@ function buildGradient(count: number, seg: number): string {
 export function FortuneWheel({ segments, winnerIndex, onLanded, maxSizePx }: FortuneWheelProps) {
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
+  const [spinMs, setSpinMs] = useState(SPIN_MIN_MS);
   const [boxSize, setBoxSize] = useState(420);
   const boxRef = useRef<HTMLDivElement | null>(null);
 
@@ -86,14 +89,19 @@ export function FortuneWheel({ segments, winnerIndex, onLanded, maxSizePx }: For
     const center = (target + 0.5) * seg;
     const jitter = (Math.random() - 0.5) * Math.max(seg - 8, 0);
     const base = mod360(POINTER_ANGLE - mod360(center + jitter));
-    const delta = mod360(base - mod360(rotation)) + 360 * 5;
+    // Random 10–18s suspense window; extra turns for longer spins keep the
+    // wheel from crawling just because the draw takes longer.
+    const duration = SPIN_MIN_MS + Math.random() * (SPIN_MAX_MS - SPIN_MIN_MS);
+    const turns = Math.max(4, Math.round(duration / 2500));
+    const delta = mod360(base - mod360(rotation)) + 360 * turns;
+    setSpinMs(duration);
     setRotation((prev) => prev + delta);
     setSpinning(true);
 
     const timer = setTimeout(() => {
       setSpinning(false);
       onLanded?.();
-    }, SPIN_MS);
+    }, duration);
     return () => clearTimeout(timer);
     // rotation must stay current for the next spin; onLanded/id stay stable
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -159,7 +167,7 @@ export function FortuneWheel({ segments, winnerIndex, onLanded, maxSizePx }: For
           style={{
             background: gradient,
             transform: `rotate(${rotation}deg)`,
-            transition: spinning ? `transform ${SPIN_MS}ms cubic-bezier(0.12, 0.84, 0.1, 1)` : 'none',
+            transition: spinning ? `transform ${spinMs}ms cubic-bezier(0.12, 0.84, 0.1, 1)` : 'none',
             boxShadow: 'inset 0 0 0 3px rgba(255, 255, 255, 0.55)',
           }}
         >

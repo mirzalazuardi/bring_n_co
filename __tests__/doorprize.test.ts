@@ -17,6 +17,7 @@ import {
   pickWinnerId,
   addAllParticipants,
   removeAllParticipants,
+  wheelOrder,
 } from '../lib/admin/doorprize';
 
 type DoorprizeClient = NonNullable<Parameters<typeof addAllParticipants>[0]>;
@@ -108,6 +109,32 @@ describe('bulk participant management', () => {
     } as unknown as DoorprizeClient;
 
     await expect(removeAllParticipants(client)).resolves.toEqual({ ok: true, removed: 145 });
+  });
+});
+
+describe('wheel segment order', () => {
+  const participants = Array.from({ length: 145 }, (_, i) => ({
+    userId: `user_${String(i).padStart(3, '0')}`,
+    name: `Nama ${String(i).padStart(3, '0')}`,
+  }));
+
+  it('is deterministic and independent of the input order', () => {
+    const forward = wheelOrder(participants).map((p) => p.userId);
+    const reversed = wheelOrder([...participants].reverse()).map((p) => p.userId);
+    expect(forward).toEqual(reversed);
+    expect(new Set(forward).size).toBe(participants.length);
+  });
+
+  it('is not alphabetical by name', () => {
+    const names = wheelOrder(participants).map((p) => p.name);
+    const alphabetical = [...names].sort((a, b) => a.localeCompare(b));
+    expect(names).not.toEqual(alphabetical);
+  });
+
+  it('keeps the surviving order when one participant leaves', () => {
+    const before = wheelOrder(participants).map((p) => p.userId);
+    const after = wheelOrder(participants.filter((p) => p.userId !== 'user_042')).map((p) => p.userId);
+    expect(after).toEqual(before.filter((id) => id !== 'user_042'));
   });
 });
 

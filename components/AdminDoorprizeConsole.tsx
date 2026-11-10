@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { FortuneWheel } from '@/components/FortuneWheel';
 import { ListPlus, Plus, RotateCcw, Trash2, Trophy, UserPlus, X, Loader2 } from 'lucide-react';
 import type { DrawView, ParticipantView, PrizeView } from '@/lib/admin/doorprize';
@@ -50,6 +50,14 @@ export function AdminDoorprizeConsole({
   const spinning = winnerIndex !== null;
   // Persisted spin result so the wheel can announce the winner when it lands.
   const pending = useRef<PendingSpin | null>(null);
+  // The wheel segments are shuffled; the side panel stays alphabetical.
+  const alphabeticalParticipants = useMemo(
+    () =>
+      [...participants].sort((a, b) =>
+        (a.name ?? a.userId).localeCompare(b.name ?? b.userId, 'id', { sensitivity: 'base' }),
+      ),
+    [participants],
+  );
 
   const refreshState = useCallback(async () => {
     const res = await fetch('/api/admin/wheel/state');
@@ -353,7 +361,7 @@ export function AdminDoorprizeConsole({
             </p>
           )}
           <ul className="space-y-2 max-h-72 overflow-y-auto">
-            {participants.map((p) => (
+            {alphabeticalParticipants.map((p) => (
               <li
                 key={p.id}
                 className="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2"

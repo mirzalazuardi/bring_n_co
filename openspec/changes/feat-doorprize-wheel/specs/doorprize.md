@@ -80,7 +80,7 @@ The admin console MUST allow creating prizes by name and deleting prizes that ha
 
 ### REQ-DW-003: Spin selects a random remaining participant and removes them
 
-The spin API MUST uniformly randomly select one of the remaining wheel participants, record an immutable draw (winner user + selected prize + timestamp), and remove the participant from the wheel — all in one transaction. A spin against an empty wheel MUST fail with a 400 error. Past winners MUST NOT be eligible for further spins. The admin wheel UI MUST visualize segments for the current remaining participants and land on the selected winner.
+The spin API MUST uniformly randomly select one of the remaining wheel participants, record an immutable draw (winner user + selected prize + timestamp), and remove the participant from the wheel — all in one transaction. A spin against an empty wheel MUST fail with a 400 error. Past winners MUST NOT be eligible for further spins. The admin wheel UI MUST visualize segments for the current remaining participants and land on the selected winner. Wheel segments MUST be ordered pseudo-randomly (shuffled, stable for a given participant set) instead of alphabetically, while the admin participant list panel stays alphabetical. Each spin animation MUST run for a random 10–18 seconds before announcing the winner.
 
 #### Scenario: Correct draw
 
@@ -99,6 +99,17 @@ The spin API MUST uniformly randomly select one of the remaining wheel participa
 - **Given** no participants remain
 - **When** admin spins
 - **Then** the API responds 400 with a "wheel set is empty" error and no draw is recorded
+
+#### Scenario: Shuffled segments, alphabetical side list
+
+- **Given** a wheel with 145 participants added from the alphabetical verified list
+- **When** the admin console or projector display renders the wheel
+- **Then** the segments are in a shuffled order that stays the same across polls and refetches, and the admin participant list is still alphabetical
+
+#### Scenario: Randomised spin duration
+
+- **Given** admin starts a spin
+- **Then** the wheel animates for a random duration between 10 and 18 seconds before the winner is announced
 
 #### Scenario: Transaction is all-or-nothing
 
